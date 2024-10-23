@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Nagyl;
 
+use Exception;
 use Nagyl\Rules\ArrayRule;
 use Nagyl\Rules\FloatRule;
 use Nagyl\Rules\IntRule;
@@ -26,9 +27,11 @@ class Validator
 	{
 		$this->result = new ValidationResult();
 		$this->values = $values;
-		$this->parseRules($rules);
+
 		$this->translation = new Translation();
 		$this->translation->setLang($lang);
+
+		$this->parseRules($rules);
 	}
 
 	public function validate(): bool
@@ -42,15 +45,10 @@ class Validator
 				$value = isset($this->values[$attribute]) ? $this->values[$attribute] : null;
 
 				foreach ($rules as $rule) {
-					$ruleClass = $rule["class"];
-					$ruleParams = $rule["params"];
-
-					$r = new $ruleClass();
+					$r = $rule["instance"];
 
 					if ($r instanceof ValidationRule) {
-						$r->translation = $this->translation;
-
-						if ($r->validate($attribute, $value, $this->values, $ruleParams, $rules) === false) {
+						if ($r->validate($attribute, $value, $this->values, $rules) === false) {
 							if (!isset($this->result->errors[$attribute])) {
 								$this->result->errors[$attribute] = [];
 							}
@@ -95,16 +93,27 @@ class Validator
 
 					foreach ($ruleParts as $p) {
 						if (isset($definedRules[$p])) {
-							$parsedRule[] = [
-								"class"		=> $definedRules[$p],
-								"params"	=> [
-									"attribute"	=> $key
-								]
-							];
+							$className =  $definedRules[$p];
+
+							try {
+								$r = new $className();
+								if ($r instanceof ValidationRule) {
+									$r->translation = $this->translation;
+									$r->params = [
+										"attribute"	=> $key
+									];
+
+									$parsedRule[] = [
+										"instance"	=> $r,
+									];
+								}
+							} catch (Exception $ex) {
+							}
 						}
 					}
 
 					$this->rules[$key] = $parsedRule;
+				} else if (is_array($rule)) {
 				}
 			}
 		}

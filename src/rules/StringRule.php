@@ -9,12 +9,12 @@ use Nagyl\Rules\NullableRule;
 
 class StringRule extends ValidationRule
 {
-	public function validate(string $name, $value, $allValues, array $params, array $rules): bool
+	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if (is_string($value) || ($value === null && $this->nullable($rules))) {
 			return true;
 		} else {
-			$this->message = $this->translation->get("string", $params);
+			$this->message = $this->translation->get("string", $this->params);
 		}
 
 		return false;

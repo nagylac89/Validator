@@ -8,7 +8,7 @@ use Nagyl\ValidationRule;
 
 class ArrayRule extends ValidationRule
 {
-	public function validate(string $name, $value, $allValues, array $params, array $rules): bool
+	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if (is_array($value)) {
 			return true;
@@ -16,7 +16,7 @@ class ArrayRule extends ValidationRule
 			return true;
 		}
 
-		$this->message = $this->translation->get("array", $params);
+		$this->message = $this->translation->get("array", $this->params);
 		return false;
 	}
 }

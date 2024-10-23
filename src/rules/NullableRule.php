@@ -8,7 +8,7 @@ use Nagyl\ValidationRule;
 
 class NullableRule extends ValidationRule
 {
-	public function validate(string $name, $value, $allValues, array $params, array $rules): bool
+	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		return true;
 	}

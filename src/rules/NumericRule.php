@@ -8,14 +8,14 @@ use Nagyl\ValidationRule;
 
 class NumericRule extends ValidationRule
 {
-	public function validate(string $name, $value, $allValues, array $params, array $rules): bool
+	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if (is_numeric($value)) {
 			return true;
 		} else if ($value === null && $this->nullable($rules)) {
 			return true;
 		} else {
-			$this->message = $this->translation->get("numeric", $params);
+			$this->message = $this->translation->get("numeric", $this->params);
 		}
 
 		return false;

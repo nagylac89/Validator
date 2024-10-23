@@ -8,7 +8,7 @@ use Nagyl\ValidationRule;
 
 class FloatRule extends ValidationRule
 {
-	public function validate(string $name, $value, $allValues, array $params, array $rules): bool
+	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if (is_float($value)) {
 			return true;
@@ -17,7 +17,7 @@ class FloatRule extends ValidationRule
 		} else if ($value === null && $this->nullable($rules)) {
 			return true;
 		} else {
-			$this->message = $this->translation->get("float", $params);
+			$this->message = $this->translation->get("float", $this->params);
 		}
 
 		return false;
