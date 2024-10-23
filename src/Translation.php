@@ -23,6 +23,7 @@ class Translation
 
 	public function get(string $key, array $params = []): string
 	{
+
 		if (isset($this->translations[$key])) {
 			$t = $this->parseParams($this->translations[$key], $params);
 			return $t;
@@ -35,7 +36,16 @@ class Translation
 	{
 		if (count($params) > 0) {
 			foreach ($params as $k => $p) {
-				$message = str_replace(":" . $k, $p, $message);
+				if ($p !== null) {
+					$val = "";
+
+					if (is_array($p)) {
+						$val = join(", ", $p);
+					} else {
+						$val = $p;
+					}
+					$message = str_replace(":" . $k, $val, $message);
+				}
 			}
 		}
 

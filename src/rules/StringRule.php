@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nagyl\Rules;
 
 use Nagyl\ValidationRule;
-use Nagyl\Rules\NullableRule;
 
 class StringRule extends ValidationRule
 {

@@ -34,6 +34,8 @@ class ValidationRule
 
 				if ($instance instanceof ValidationRule) {
 					$instance->params = $params;
+
+					return $instance;
 				}
 			}
 		} catch (Exception $ex) {
