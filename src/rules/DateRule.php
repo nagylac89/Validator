@@ -43,6 +43,7 @@ class DateRule extends ValidationRule
 			return true;
 		}
 
+		$this->message = $this->translation->get("date", ["attribute" => $name]);
 		return false;
 	}
 }

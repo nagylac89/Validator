@@ -9,5 +9,7 @@ return [
 	"array"		=> "The :attribute must be array!",
 	"required"	=> "Required field: :attribute!",
 	"in"		=> "The :attribute value does not in the enabled values! (:values)",
-	"invalid"	=> "Invalid value: :attribute!"
+	"invalid"	=> "Invalid value: :attribute!",
+	"date"		=> "Invalid date: :attribute!",
+	"contains"	=> "The :attribute must contains :value!",
 ];

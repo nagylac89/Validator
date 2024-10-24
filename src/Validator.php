@@ -6,6 +6,7 @@ namespace Nagyl;
 
 use Nagyl\Rules\ArrayRule;
 use Nagyl\Rules\BooleanRule;
+use Nagyl\Rules\ContainsRule;
 use Nagyl\Rules\DateRule;
 use Nagyl\Rules\FloatRule;
 use Nagyl\Rules\InRule;
@@ -202,6 +203,15 @@ class Validator
 	{
 		$formats = is_array($format) ? $format : [$format];
 		$v = new DateRule($formats);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function contains(string $value): Validator
+	{
+		$v = new ContainsRule($value);
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;
