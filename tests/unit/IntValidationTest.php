@@ -5,68 +5,54 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Nagyl\Validator;
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
-
-class IntValidationTest extends TestCase
-{
-	#[Test()]
-	public function int_validator_should_be_valid_on_int()
-	{
-		$values = ["val"	=> 10];
-		$rules =  ["val"	=> "int"];
-
-		$v = new Validator($values, $rules);
 
 
-		$this->assertSame(true, $v->validate());
-	}
+test("int_validator_should_be_valid_on_int", function () {
+	$values = ["val"	=> 10];
 
-	#[Test()]
-	public function int_validator_should_be_valid_on_int_string()
-	{
-		$values = ["val"	=> "1"];
-		$rules =  ["val"	=> "int"];
+	$v = new Validator($values);
+	$v->attribute("val")->int()->add();
 
-		$v = new Validator($values, $rules);
+	expect($v->validate())->toBeTrue();
+});
 
-		$this->assertSame(true, $v->validate());
-	}
+test("int_validator_should_be_valid_on_int_string", function () {
+	$values = ["val"	=> "1"];
 
-	#[Test()]
-	public function int_validator_should_be_invalid_on_null()
-	{
-		$values = ["val"	=> null];
-		$rules =  ["val"	=> "int"];
+	$v = new Validator($values);
+	$v->attribute("val")->int()->add();
 
-		$v = new Validator($values, $rules);
+	expect($v->validate())->toBeTrue();
+});
 
-		$this->assertSame(false, $v->validate());
-	}
+test("int_validator_should_be_invalid_on_null", function () {
+	$values = ["val"	=> null];
 
-	#[Test()]
-	public function int_validator_should_be_valid_when_nullable()
-	{
-		$values = ["val"	=> null];
-		$rules =  ["val"	=> "int|nullable"];
+	$v = new Validator($values);
+	$v->attribute("val")->int()->add();
 
-		$v = new Validator($values, $rules);
+	expect($v->validate())->toBeFalse();
+});
 
-		$this->assertSame(true, $v->validate());
-	}
+test("int_validator_should_be_valid_when_nullable", function () {
+	$values = ["val"	=> null];
 
-	#[Test()]
-	public function int_validator_should_be_return_error()
-	{
-		$values = ["val"	=> ""];
-		$rules =  ["val"	=> "int"];
+	$v = new Validator($values);
+	$v->attribute("val")->int()->nullable()->add();
 
-		$v = new Validator($values, $rules);
-		$v->validate();
-		$result = $v->result();
+	expect($v->validate())->toBeTrue();
+});
 
-		$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
+test("int_validator_should_be_return_error", function () {
+	$values = ["val"	=> ""];
 
-		$this->assertSame("The val must be integer!", $errorMsg);
-	}
-}
+	$v = new Validator($values);
+	$v->attribute("val")->int()->add();
+
+	$v->validate();
+	$result = $v->result();
+
+	$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
+
+	expect($errorMsg)->toBe("The val must be integer!");
+});

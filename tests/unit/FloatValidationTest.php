@@ -5,79 +5,64 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Nagyl\Validator;
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 
-class FloatValidationTest extends TestCase
-{
-	#[Test()]
-	public function float_validator_should_be_valid_on_float()
-	{
-		$values = ["val"	=> 10.0];
-		$rules =  ["val"	=> "float"];
+test("float_validator_should_be_valid_on_float", function () {
+	$values = ["val"	=> 10.0];
 
-		$v = new Validator($values, $rules);
+	$v = new Validator($values);
+	$v->attribute("val")->float()->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("float_validator_should_be_valid_on_float_string", function () {
+	$values = ["val"	=> "1.1"];
+
+	$v = new Validator($values);
+	$v->attribute("val")->float()->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("float_validator_should_be_invalid_on_null", function () {
+	$values = ["val"	=> null];
+
+	$v = new Validator($values);
+	$v->attribute("val")->float()->add();
+
+	expect($v->validate())->toBeFalse();
+});
+
+test("float_validator_should_be_invalid_on_int", function () {
+	$values = ["val"	=> 1];
+
+	$v = new Validator($values);
+	$v->attribute("val")->float()->add();
+
+	expect($v->validate())->toBeFalse();
+});
+
+test("float_validator_should_be_valid_when_nullable", function () {
+	$values = ["val"	=> null];
+
+	$v = new Validator($values);
+	$v->attribute("val")->float()->nullable()->add();
+
+	expect($v->validate())->toBeTrue();
+});
 
 
-		$this->assertSame(true, $v->validate());
-	}
 
-	#[Test()]
-	public function float_validator_should_be_valid_on_float_string()
-	{
-		$values = ["val"	=> "1.1"];
-		$rules =  ["val"	=> "float"];
+test("float_validator_should_be_return_error", function () {
+	$values = ["val"	=> ""];
 
-		$v = new Validator($values, $rules);
 
-		$this->assertSame(true, $v->validate());
-	}
+	$v = new Validator($values);
+	$v->attribute("val")->float()->add();
 
-	#[Test()]
-	public function float_validator_should_be_invalid_on_null()
-	{
-		$values = ["val"	=> null];
-		$rules =  ["val"	=> "float"];
+	$v->validate();
+	$result = $v->result();
+	$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
 
-		$v = new Validator($values, $rules);
-
-		$this->assertSame(false, $v->validate());
-	}
-
-	#[Test()]
-	public function float_validator_should_be_invalid_on_int()
-	{
-		$values = ["val"	=> 1];
-		$rules =  ["val"	=> "float"];
-
-		$v = new Validator($values, $rules);
-
-		$this->assertSame(false, $v->validate());
-	}
-
-	#[Test()]
-	public function float_validator_should_be_valid_when_nullable()
-	{
-		$values = ["val"	=> null];
-		$rules =  ["val"	=> "float|nullable"];
-
-		$v = new Validator($values, $rules);
-
-		$this->assertSame(true, $v->validate());
-	}
-
-	#[Test()]
-	public function float_validator_should_be_return_error()
-	{
-		$values = ["val"	=> ""];
-		$rules =  ["val"	=> "float"];
-
-		$v = new Validator($values, $rules);
-		$v->validate();
-		$result = $v->result();
-
-		$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
-
-		$this->assertSame("The val must be decimal number!", $errorMsg);
-	}
-}
+	expect($errorMsg)->toBe("The val must be decimal number!");
+});

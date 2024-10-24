@@ -17,7 +17,7 @@ class FloatRule extends ValidationRule
 		} else if ($value === null && $this->nullable($rules)) {
 			return true;
 		} else {
-			$this->message = $this->translation->get("float", $this->params);
+			$this->message = $this->translation->get("float", ["attribute" => $name]);
 		}
 
 		return false;

@@ -5,68 +5,56 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Nagyl\Validator;
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
-
-class ArrayValidationTest extends TestCase
-{
-	#[Test()]
-	public function array_validator_should_be_valid_on_array()
-	{
-		$values = ["val"	=> [1, 2, 3]];
-		$rules =  ["val"	=> "array"];
-
-		$v = new Validator($values, $rules);
 
 
-		$this->assertSame(true, $v->validate());
-	}
+test('array_validator_should_be_valid_on_array', function () {
+	$values = ["val"	=> [1, 2, 3]];
 
-	#[Test()]
-	public function array_validator_should_be_invalid_on_string()
-	{
-		$values = ["val"	=> "1.1"];
-		$rules =  ["val"	=> "array"];
+	$v = new Validator($values);
+	$v->attribute("val")->array()->add();
 
-		$v = new Validator($values, $rules);
 
-		$this->assertSame(false, $v->validate());
-	}
+	expect($v->validate())->toBeTrue();
+});
 
-	#[Test()]
-	public function array_validator_should_be_invalid_on_null()
-	{
-		$values = ["val"	=> null];
-		$rules =  ["val"	=> "array"];
 
-		$v = new Validator($values, $rules);
+test('array_validator_should_be_invalid_on_string', function () {
+	$values = ["val"	=> "1.1"];
 
-		$this->assertSame(false, $v->validate());
-	}
+	$v = new Validator($values);
+	$v->attribute("val")->array()->add();
 
-	#[Test()]
-	public function array_nullable_validator_should_be_valid_on_null()
-	{
-		$values = ["val"	=> null];
-		$rules =  ["val"	=> "array"];
+	expect($v->validate())->toBeFalse();
+});
 
-		$v = new Validator($values, $rules);
+test('array_validator_should_be_invalid_on_null', function () {
+	$values = ["val"	=> null];
 
-		$this->assertSame(false, $v->validate());
-	}
+	$v = new Validator($values);
+	$v->attribute("val")->array()->add();
 
-	#[Test()]
-	public function float_validator_should_be_return_error()
-	{
-		$values = ["val"	=> ""];
-		$rules =  ["val"	=> "array"];
+	expect($v->validate())->toBeFalse();
+});
 
-		$v = new Validator($values, $rules);
-		$v->validate();
-		$result = $v->result();
+test('array_nullable_validator_should_be_valid_on_null', function () {
+	$values = ["val"	=> null];
 
-		$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
+	$v = new Validator($values);
+	$v->attribute("val")->array()->nullable()->add();
 
-		$this->assertSame("The val must be array!", $errorMsg);
-	}
-}
+	expect($v->validate())->toBeTrue();
+});
+
+test('float_validator_should_be_return_error', function () {
+	$values = ["val"	=> ""];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->add();
+
+	$v->validate();
+	$result = $v->result();
+
+	$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
+
+	expect($errorMsg)->toBe("The val must be array!");
+});

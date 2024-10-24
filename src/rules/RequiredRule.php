@@ -15,7 +15,7 @@ class RequiredRule extends ValidationRule
 			(is_string($value) && trim($value) === "") ||
 			(is_array($value) && count($value) === 0)
 		) {
-			$this->message = $this->translation->get("required", $this->params);
+			$this->message = $this->translation->get("required", [...$this->params, "attribute" => $name]);
 
 			return false;
 		}

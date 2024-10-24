@@ -13,7 +13,7 @@ class StringRule extends ValidationRule
 		if (is_string($value) || ($value === null && $this->nullable($rules))) {
 			return true;
 		} else {
-			$this->message = $this->translation->get("string", $this->params);
+			$this->message = $this->translation->get("string", ["attribute" => $name]);
 		}
 
 		return false;

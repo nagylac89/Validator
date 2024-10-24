@@ -5,83 +5,62 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Nagyl\Validator;
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 
-class RequiredValidationTest extends TestCase
-{
-	#[Test()]
-	public function required_validator_should_be_invalid_on_empty_string()
-	{
-		$values = ["val"	=> ""];
-		$rules =  ["val"	=> "string|required"];
+test("required_validator_should_be_invalid_on_empty_string", function () {
+	$values = ["val"	=> ""];
 
-		$v = new Validator($values, $rules);
+	$v = new Validator($values);
+	$v->attribute("val")->string()->required()->add();
 
+	expect($v->validate())->toBeFalse();
+});
 
-		$this->assertSame(false, $v->validate());
-	}
+test("required_validator_should_be_valid_on_string", function () {
+	$values = ["val"	=> "test"];
 
-	#[Test()]
-	public function required_validator_should_be_valid_on_string()
-	{
-		$values = ["val"	=> "test"];
-		$rules =  ["val"	=> "string|required"];
+	$v = new Validator($values);
+	$v->attribute("val")->string()->required()->add();
 
-		$v = new Validator($values, $rules);
+	expect($v->validate())->toBeTrue();
+});
 
+test("required_validator_should_be_invalid_on_null", function () {
+	$values = ["val"	=> null];
 
-		$this->assertSame(true, $v->validate());
-	}
+	$v = new Validator($values);
+	$v->attribute("val")->required()->add();
 
-	#[Test()]
-	public function required_validator_should_be_invalid_on_null()
-	{
-		$values = ["val"	=> null];
-		$rules =  ["val"	=> "required"];
+	expect($v->validate())->toBeFalse();
+});
 
-		$v = new Validator($values, $rules);
+test("required_validator_should_be_invalid_on_empty_array", function () {
+	$values = ["val"	=> []];
 
+	$v = new Validator($values);
+	$v->attribute("val")->required()->add();
 
-		$this->assertSame(false, $v->validate());
-	}
+	expect($v->validate())->toBeFalse();
+});
 
-	#[Test()]
-	public function required_validator_should_be_invalid_on_empty_array()
-	{
-		$values = ["val"	=> []];
-		$rules =  ["val"	=> "required"];
+test("required_validator_should_be_valid_on_array", function () {
+	$values = ["val"	=> [1, 2, 3]];
 
-		$v = new Validator($values, $rules);
+	$v = new Validator($values);
+	$v->attribute("val")->required()->add();
 
+	expect($v->validate())->tobeTrue();
+});
 
-		$this->assertSame(false, $v->validate());
-	}
+test("required_validator_should_be_return_error", function () {
+	$values = ["val"	=> null];
 
-	#[Test()]
-	public function required_validator_should_be_valid_on_array()
-	{
-		$values = ["val"	=> [1, 2, 3]];
-		$rules =  ["val"	=> "required"];
+	$v = new Validator($values);
+	$v->attribute("val")->required()->add();
 
-		$v = new Validator($values, $rules);
+	$v->validate();
+	$result = $v->result();
 
+	$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
 
-		$this->assertSame(true, $v->validate());
-	}
-
-	#[Test()]
-	public function required_validator_should_be_return_error()
-	{
-		$values = ["val"	=> null];
-		$rules =  ["val"	=> "required"];
-
-		$v = new Validator($values, $rules);
-		$v->validate();
-		$result = $v->result();
-
-		$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
-
-		$this->assertSame("Required field: val!", $errorMsg);
-	}
-}
+	expect($errorMsg)->toBe("Required field: val!");
+});

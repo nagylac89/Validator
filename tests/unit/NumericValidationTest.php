@@ -5,79 +5,61 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Nagyl\Validator;
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 
-class NumericValidationTest extends TestCase
-{
-	#[Test()]
-	public function numeric_validator_should_be_valid_on_float()
-	{
-		$values = ["val"	=> 10.0];
-		$rules =  ["val"	=> "numeric"];
+test("numeric_validator_should_be_valid_on_float", function () {
+	$values = ["val"	=> 10.0];
 
-		$v = new Validator($values, $rules);
+	$v = new Validator($values);
+	$v->attribute("val")->numeric()->add();
 
+	expect($v->validate())->toBeTrue();
+});
 
-		$this->assertSame(true, $v->validate());
-	}
+test("numeric_validator_should_be_valid_on_float_string", function () {
+	$values = ["val"	=> "1.1"];
 
-	#[Test()]
-	public function numeric_validator_should_be_valid_on_float_string()
-	{
-		$values = ["val"	=> "1.1"];
-		$rules =  ["val"	=> "numeric"];
+	$v = new Validator($values);
+	$v->attribute("val")->numeric()->add();
 
-		$v = new Validator($values, $rules);
+	expect($v->validate())->toBeTrue();
+});
 
-		$this->assertSame(true, $v->validate());
-	}
+test("numeric_validator_should_be_invalid_on_null", function () {
+	$values = ["val"	=> null];
 
-	#[Test()]
-	public function numeric_validator_should_be_invalid_on_null()
-	{
-		$values = ["val"	=> null];
-		$rules =  ["val"	=> "numeric"];
+	$v = new Validator($values);
+	$v->attribute("val")->numeric()->add();
 
-		$v = new Validator($values, $rules);
+	expect($v->validate())->toBeFalse();
+});
 
-		$this->assertSame(false, $v->validate());
-	}
+test("numeric_validator_should_be_valid_on_int", function () {
+	$values = ["val"	=> 1];
 
-	#[Test()]
-	public function numeric_validator_should_be_valid_on_int()
-	{
-		$values = ["val"	=> 1];
-		$rules =  ["val"	=> "numeric"];
+	$v = new Validator($values);
+	$v->attribute("val")->numeric()->add();
 
-		$v = new Validator($values, $rules);
+	expect($v->validate())->toBeTrue();
+});
 
-		$this->assertSame(true, $v->validate());
-	}
+test("numeric_validator_should_be_valid_when_nullable", function () {
+	$values = ["val"	=> null];
 
-	#[Test()]
-	public function numeric_validator_should_be_valid_when_nullable()
-	{
-		$values = ["val"	=> null];
-		$rules =  ["val"	=> "numeric|nullable"];
+	$v = new Validator($values);
+	$v->attribute("val")->numeric()->nullable()->add();
 
-		$v = new Validator($values, $rules);
+	expect($v->validate())->toBeTrue();
+});
 
-		$this->assertSame(true, $v->validate());
-	}
+test("numeric_validator_should_be_return_error", function () {
+	$values = ["val"	=> ""];
 
-	#[Test()]
-	public function numeric_validator_should_be_return_error()
-	{
-		$values = ["val"	=> ""];
-		$rules =  ["val"	=> "numeric"];
+	$v = new Validator($values);
+	$v->attribute("val")->numeric()->add();
+	$v->validate();
+	$result = $v->result();
 
-		$v = new Validator($values, $rules);
-		$v->validate();
-		$result = $v->result();
+	$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
 
-		$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
-
-		$this->assertSame("The val must be number!", $errorMsg);
-	}
-}
+	expect($errorMsg)->toBe("The val must be number!");
+});

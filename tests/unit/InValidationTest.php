@@ -6,46 +6,35 @@ namespace Tests\Unit;
 
 use Nagyl\Rules\InRule;
 use Nagyl\Validator;
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 
-class InValidationTest extends TestCase
-{
-	#[Test()]
-	public function in_validation_should_valid()
-	{
-		$values = ["val"	=> 2];
-		$rules =  ["val"	=> [InRule::create([2, 3, 4])]];
 
-		$v = new Validator($values, $rules);
+test("in_validation_should_valid", function () {
+	$values = ["val"	=> 2];
 
-		$this->assertSame(true, $v->validate());
-	}
+	$v = new Validator($values);
+	$v->attribute("val")->in([2, 3, 4])->add();
 
-	#[Test()]
-	public function in_validation_should_failed()
-	{
-		$values = ["val"	=> 1];
-		$rules =  ["val"	=> [InRule::create([2, 3, 4])]];
+	expect($v->validate())->toBeTrue();
+});
 
-		$v = new Validator($values, $rules);
+test("in_validation_should_failed", function () {
+	$values = ["val"	=> 1];
 
-		$this->assertSame(false, $v->validate());
-	}
+	$v = new Validator($values);
+	$v->attribute("val")->in([2, 3, 4])->add();
 
-	#[Test()]
-	public function in_validation_failed_error()
-	{
-		$values = ["val"	=> 1];
-		$rules =  ["val"	=> [InRule::create([2, 3, 4])]];
+	expect($v->validate())->tobeFalse();
+});
 
-		$v = new Validator($values, $rules);
-		$v->validate();
+test("in_validation_failed_error", function () {
+	$values = ["val"	=> 1];
 
-		$result = $v->result();
+	$v = new Validator($values);
+	$v->attribute("val")->in([2, 3, 4])->add();
 
-		$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
+	$v->validate();
+	$result = $v->result();
+	$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
 
-		$this->assertSame("The val value does not in the enabled values! (2, 3, 4)", $errorMsg);
-	}
-}
+	expect($errorMsg)->toBe("The val value does not in the enabled values! (2, 3, 4)");
+});

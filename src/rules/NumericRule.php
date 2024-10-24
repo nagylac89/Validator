@@ -15,7 +15,7 @@ class NumericRule extends ValidationRule
 		} else if ($value === null && $this->nullable($rules)) {
 			return true;
 		} else {
-			$this->message = $this->translation->get("numeric", $this->params);
+			$this->message = $this->translation->get("numeric", [...$this->params, "attribute" => $name]);
 		}
 
 		return false;

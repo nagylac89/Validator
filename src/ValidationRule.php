@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nagyl;
 
+use Error;
 use Exception;
 use Nagyl\Rules\NullableRule;
 use Nagyl\Translation;
@@ -24,30 +25,10 @@ class ValidationRule
 		return $this->message;
 	}
 
-	public static function create(array $params = []): ?ValidationRule
-	{
-		$className = get_called_class();
-
-		try {
-			if (class_exists($className)) {
-				$instance = new $className();
-
-				if ($instance instanceof ValidationRule) {
-					$instance->params = $params;
-
-					return $instance;
-				}
-			}
-		} catch (Exception $ex) {
-		}
-
-		return null;
-	}
-
 	protected function nullable(array $rules): bool
 	{
 		$classNames = array_map(function ($r) {
-			return get_class($r["instance"]);
+			return get_class($r);
 		}, $rules);
 
 		return in_array(NullableRule::class, $classNames);

@@ -10,6 +10,7 @@ use Nagyl\Rules\ArrayRule;
 use Nagyl\Rules\FloatRule;
 use Nagyl\Rules\InRule;
 use Nagyl\Rules\IntRule;
+use Nagyl\Rules\MinLengthRule;
 use Nagyl\ValidationRule;
 use Nagyl\Rules\StringRule;
 use Nagyl\Rules\NullableRule;
@@ -23,16 +24,18 @@ class Validator
 	private array $rules = [];
 	private $values;
 	private Translation $translation;
+	private array $_rule = [
+		"attribute"	=> null,
+		"rules"		=> []
+	];
 
-	public function __construct($values, array $rules, string $lang = "en")
+	public function __construct($values, string $lang = "en")
 	{
 		$this->result = new ValidationResult();
 		$this->values = $values;
 
 		$this->translation = new Translation();
 		$this->translation->setLang($lang);
-
-		$this->parseRules($rules);
 	}
 
 	public function validate(): bool
@@ -46,14 +49,12 @@ class Validator
 				$value = isset($this->values[$attribute]) ? $this->values[$attribute] : null;
 
 				foreach ($rules as $rule) {
-					$r = $rule["instance"];
-
-					if ($r instanceof ValidationRule) {
-						if ($r->validate($attribute, $value, $this->values, $rules) === false) {
+					if ($rule instanceof ValidationRule) {
+						if ($rule->validate($attribute, $value, $this->values, $rules) === false) {
 							if (!isset($this->result->errors[$attribute])) {
 								$this->result->errors[$attribute] = [];
 							}
-							$this->result->errors[$attribute][] = $r->getMessage();
+							$this->result->errors[$attribute][] = $rule->getMessage();
 						}
 					}
 				}
@@ -72,96 +73,109 @@ class Validator
 		return $this->result;
 	}
 
-	private function allRules(): array
+	public function attribute(string $attribute): Validator
 	{
-		$retval = [
-			"string"	=> StringRule::class,
-			"nullable"	=> NullableRule::class,
-			"int"		=> IntRule::class,
-			"float"		=> FloatRule::class,
-			"numeric"	=> NumericRule::class,
-			"required"	=> RequiredRule::class,
-			"array"		=> ArrayRule::class,
-			"in"		=> InRule::class
-		];
+		$this->_rule["attribute"] = $attribute;
+		$this->_rule["rules"] = [];
 
-		return $retval;
+		return $this;
 	}
 
-	private function parseRuleFromString(string $ruleString, string $attribute): ?ValidationRule
+	public function add(): void
 	{
-		$definedRules = $this->allRules();
+		if (!empty($this->_rule["attribute"]) && count($this->_rule["rules"]) > 0) {
+			$attribute = $this->_rule["attribute"];
+			$rules = $this->_rule["rules"];
 
-		if (isset($definedRules[$ruleString])) {
-			$className =  $definedRules[$ruleString];
-
-			try {
-				$r = new $className();
-				if ($r instanceof ValidationRule) {
-					$r->translation = $this->translation;
-
-					$r->params = [
-						"attribute"	=> $attribute
-					];
-
-					return $r;
-				}
-			} catch (Exception $ex) {
+			if (isset($this->rules[$attribute])) {
+				$this->rules[$attribute] = [...$this->rules[$attribute], ...$rules];
+			} else {
+				$this->rules[$attribute] = $rules;
 			}
 		}
-		return null;
+
+		$this->_rule["attribute"] = null;
+		$this->_rule["rules"] = [];
 	}
 
-
-	private function parseRules(array $rules): void
+	public function string(): Validator
 	{
-		if (count($rules) > 0) {
-			foreach ($rules as $key => $rule) {
-				if (!isset($this->rules[$key])) {
-					$this->rules[$key] = [];
-				}
+		$v = new StringRule();
+		$v->translation = $this->translation;
 
-				if (is_string($rule)) {
-					$ruleParts = explode("|", $rule);
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
 
-					foreach ($ruleParts as $p) {
-						$r = $this->parseRuleFromString($p, $key);
+	public function required(): Validator
+	{
+		$v = new RequiredRule();
+		$v->translation = $this->translation;
 
-						if ($r !== null) {
-							$this->rules[$key][] = [
-								"instance"	=> $r,
-							];
-						}
-					}
-				} else if (is_array($rule)) {
-					foreach ($rule as $p) {
-						if (is_string($p)) {
-							$r = $this->parseRuleFromString($p, $key);
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
 
-							if ($r !== null) {
-								$this->rules[$key][] = [
-									"instance"	=> $r,
-								];
-							}
-						} else if ($p instanceof ValidationRule) {
-							$p->translation = $this->translation;
+	public function nullable(): Validator
+	{
+		$v = new NullableRule();
+		$v->translation = $this->translation;
 
-							$ruleParams = $p->params;
-							$p->params = [
-								"attribute"	=> $key
-							];
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
 
-							if (count($ruleParams) > 0) {
-								$p->params["rule"] = $ruleParams;
-							}
+	public function array(): Validator
+	{
+		$v = new ArrayRule();
+		$v->translation = $this->translation;
 
-							$this->rules[$key][] = [
-								"instance"	=> $p,
-							];
-						}
-					}
-				}
-			}
-		}
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function float(): Validator
+	{
+		$v = new FloatRule();
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function int(): Validator
+	{
+		$v = new IntRule();
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function numeric(): Validator
+	{
+		$v = new NumericRule();
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function in(array $values): Validator
+	{
+		$v = new InRule($values);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function minLength(int $length): Validator
+	{
+		$v = new MinLengthRule($length);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
 	}
 }

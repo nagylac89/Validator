@@ -16,7 +16,7 @@ class ArrayRule extends ValidationRule
 			return true;
 		}
 
-		$this->message = $this->translation->get("array", $this->params);
+		$this->message = $this->translation->get("array", ["attribute" => $name]);
 		return false;
 	}
 }
