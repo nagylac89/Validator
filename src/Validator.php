@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-
 namespace Nagyl;
 
-use Exception;
 use Nagyl\Rules\ArrayRule;
+use Nagyl\Rules\BooleanRule;
+use Nagyl\Rules\DateRule;
 use Nagyl\Rules\FloatRule;
 use Nagyl\Rules\InRule;
 use Nagyl\Rules\IntRule;
+use Nagyl\Rules\MaxLengthRule;
 use Nagyl\Rules\MinLengthRule;
 use Nagyl\ValidationRule;
 use Nagyl\Rules\StringRule;
@@ -173,6 +174,34 @@ class Validator
 	public function minLength(int $length): Validator
 	{
 		$v = new MinLengthRule($length);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function maxLength(int $length): Validator
+	{
+		$v = new MaxLengthRule($length);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function boolean(): Validator
+	{
+		$v = new BooleanRule();
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function date(string|array $format = []): Validator
+	{
+		$formats = is_array($format) ? $format : [$format];
+		$v = new DateRule($formats);
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;
