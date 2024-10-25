@@ -1,5 +1,6 @@
 {
   "name": "nagyl/validator",
+  "type": "library",
   "autoload": {
     "psr-4": {
       "Nagyl\\": "src/"
