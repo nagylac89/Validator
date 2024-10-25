@@ -8,6 +8,7 @@ use Nagyl\Rules\ArrayRule;
 use Nagyl\Rules\BooleanRule;
 use Nagyl\Rules\ContainsRule;
 use Nagyl\Rules\DateRule;
+use Nagyl\Rules\ExistsRule;
 use Nagyl\Rules\FloatRule;
 use Nagyl\Rules\InRule;
 use Nagyl\Rules\IntRule;
@@ -26,9 +27,10 @@ class Validator
 	private array $rules = [];
 	private $values;
 	private Translation $translation;
+	private static $queryFetcher = null;
 	private array $_rule = [
-		"attribute"	=> null,
-		"rules"		=> []
+		"attribute" => null,
+		"rules" => []
 	];
 
 	public function __construct($values, string $lang = "en")
@@ -38,6 +40,16 @@ class Validator
 
 		$this->translation = new Translation();
 		$this->translation->setLang($lang);
+	}
+
+	public static function setQueryFetcher(callable $func): void
+	{
+		self::$queryFetcher = $func;
+	}
+
+	public static function getQueryFetcher(): ?callable
+	{
+		return self::$queryFetcher;
 	}
 
 	public function validate(): bool
@@ -212,6 +224,15 @@ class Validator
 	public function contains(string $value): Validator
 	{
 		$v = new ContainsRule($value);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function exists(string $table, string $column, ?string $additionalFilters = null): Validator
+	{
+		$v = new ExistsRule($table, $column, $additionalFilters);
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;

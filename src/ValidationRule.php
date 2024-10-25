@@ -33,4 +33,13 @@ class ValidationRule
 
 		return in_array(NullableRule::class, $classNames);
 	}
+
+	protected function existsRule(array $rules, string $ruleClass): bool
+	{
+		$classNames = array_map(function ($r) {
+			return get_class($r);
+		}, $rules);
+
+		return in_array($ruleClass, $classNames);
+	}
 }
