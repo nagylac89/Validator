@@ -21,6 +21,12 @@ use Nagyl\Rules\NumericRule;
 use Nagyl\Rules\RequiredRule;
 use Nagyl\Translation;
 
+/**
+ * 
+ * TODO: unique, equal, gt, gte, lt, lte, must, arrays...
+ * 
+ */
+
 class Validator
 {
 	private ValidationResult $result;
@@ -52,7 +58,7 @@ class Validator
 		return self::$queryFetcher;
 	}
 
-	public function validate(): bool
+	public function validate(bool $stopOnFirstError = false): bool
 	{
 		$this->result->isValid = true;
 		$this->result->errors = [];
@@ -69,6 +75,10 @@ class Validator
 								$this->result->errors[$attribute] = [];
 							}
 							$this->result->errors[$attribute][] = $rule->getMessage();
+
+							if ($stopOnFirstError) {
+								break;
+							}
 						}
 					}
 				}
@@ -236,6 +246,15 @@ class Validator
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function when(callable $condition, callable $otherRuleFunction): Validator
+	{
+		if ($condition($this->values) === true) {
+			$otherRuleFunction($this);
+		}
+
 		return $this;
 	}
 }

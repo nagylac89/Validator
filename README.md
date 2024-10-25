@@ -3,9 +3,9 @@ Standalone validator library.
 ```php
 <?php
 $values = [
-  "id"	=> 1,
-  "email"	=> "email@test.com",
-  "name"	=> "Test Name"
+  "id" => 1,
+  "email" => "email@test.com",
+  "name" => "Test Name"
 ];
 
 $v = new Validator($values);

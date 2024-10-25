@@ -6,8 +6,6 @@ namespace Tests\Unit;
 
 use Nagyl\Validator;
 
-$database = null;
-
 pest()->beforeEach(function () {
 	$database = new \SQLite3('test.sqlite');
 	$database->exec("create table users (id int primary key not null, name text not null, is_deleted tinyint null)");
@@ -75,7 +73,6 @@ test('exists_validator_should_be_valid_onadditional', function () {
 
 	$v = new Validator($values);
 	$v->attribute("val")->int()->exists("users", "id", "and is_deleted = 0")->add();
-
 
 	expect($v->validate())->toBeTrue();
 });
