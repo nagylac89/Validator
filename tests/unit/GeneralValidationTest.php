@@ -33,3 +33,26 @@ test("when_true_should_be_valid", function () {
 
 	expect($v->validate())->toBeFalse();
 });
+
+test("eq_rule_should_be_valid", function () {
+	$v = new Validator([
+		"name" => "oksa"
+	]);
+
+	$v->attribute("name")->string()->eq("oksa")->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("eq_rule_should_be_invalid", function () {
+	$v = new Validator([
+		"name" => "oksa"
+	]);
+
+	$v->attribute("name")->string()->eq("ok")->add();
+	$v->validate();
+
+	$result = $v->result();
+
+	expect($result->errors["name"][0])->toBe("The name value not equal with ok!");
+});

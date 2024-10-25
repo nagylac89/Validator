@@ -8,6 +8,7 @@ use Nagyl\Rules\ArrayRule;
 use Nagyl\Rules\BooleanRule;
 use Nagyl\Rules\ContainsRule;
 use Nagyl\Rules\DateRule;
+use Nagyl\Rules\EqualRule;
 use Nagyl\Rules\ExistsRule;
 use Nagyl\Rules\FloatRule;
 use Nagyl\Rules\InRule;
@@ -23,7 +24,7 @@ use Nagyl\Translation;
 
 /**
  * 
- * TODO: unique, equal, gt, gte, lt, lte, must, arrays...
+ * TODO: unique, gt, gte, lt, lte, must, arrays...
  * 
  */
 
@@ -255,6 +256,15 @@ class Validator
 			$otherRuleFunction($this);
 		}
 
+		return $this;
+	}
+
+	public function eq($value): Validator
+	{
+		$v = new EqualRule($value);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
 		return $this;
 	}
 }
