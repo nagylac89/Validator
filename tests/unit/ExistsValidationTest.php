@@ -76,3 +76,15 @@ test('exists_validator_should_be_valid_onadditional', function () {
 
 	expect($v->validate())->toBeTrue();
 });
+
+test('exists_validator_should_be_invalid_msg_check', function () {
+	$values = ["val" => 4];
+
+	$v = new Validator($values);
+	$v->attribute("val")->int()->exists("users", "id", "and is_deleted = 0")->add();
+	$v->validate();
+
+	$msg = $v->result()->errors["val"][0];
+
+	expect($msg)->toBe("Invalid value: val!");
+});

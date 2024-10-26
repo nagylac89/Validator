@@ -36,6 +36,7 @@ class ExistsRule extends ValidationRule
 			}
 		}
 
+		$this->message = $this->translation->get("invalid", ["attribute" => $name]);
 		return false;
 	}
 
@@ -52,10 +53,12 @@ class ExistsRule extends ValidationRule
 		}
 
 		if ($sqlVal) {
-			$qs = "select count(*) as db from " . $this->params["table"];
-			$qs .= " where " . $this->params["column"];
-			$qs .= " = ";
-			$qs .= $sqlVal;
+			$qs = sprintf(
+				"SELECT COUNT(*) AS db FROM %s WHERE %s = %s",
+				$this->params["table"],
+				$this->params["column"],
+				$sqlVal
+			);
 
 			if ($this->params["additionalFilters"] !== null) {
 				$qs .= " " . $this->params["additionalFilters"];

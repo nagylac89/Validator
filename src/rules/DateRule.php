@@ -10,6 +10,7 @@ use Nagyl\ValidationRule;
 class DateRule extends ValidationRule
 {
 	private ?DateTime $val = null;
+	private string $parseFormat = "";
 
 	public function __construct(array $formats = [])
 	{
@@ -32,6 +33,7 @@ class DateRule extends ValidationRule
 					$v = DateTime::createFromFormat($f, $value);
 
 					if ($v !== false) {
+						$this->parseFormat = $f;
 						$this->val = clone $v;
 						return true;
 					}
@@ -40,10 +42,21 @@ class DateRule extends ValidationRule
 		} else if ($value === null && $this->nullable($rules)) {
 			return true;
 		} else if ($value instanceof DateTime) {
+			$this->val = clone $value;
 			return true;
 		}
 
 		$this->message = $this->translation->get("date", ["attribute" => $name]);
 		return false;
+	}
+
+	public function value(): ?DateTime
+	{
+		return $this->val;
+	}
+
+	public function format(): string
+	{
+		return $this->parseFormat;
 	}
 }

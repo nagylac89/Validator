@@ -12,5 +12,9 @@ return [
 	"invalid" => "Invalid value: :attribute!",
 	"date" => "Invalid date: :attribute!",
 	"contains" => "The :attribute must contains :value!",
-	"eq" => "The :attribute value not equal with :value!"
+	"eq" => "The :attribute value not equal with :value!",
+	"gt" => "The :attribute value should be greater than :value!",
+	"gte" => "The :attribute value should be greater than or equal :value!",
+	"lt" => "The :attribute value should be less than :value!",
+	"lte" => "The :attribute value should be less than or equal :value!"
 ];

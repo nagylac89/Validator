@@ -9,7 +9,9 @@ class Translation
 	protected string $lang = "";
 	protected array $translations = [];
 
-	public function __construct() {}
+	public function __construct()
+	{
+	}
 
 	public function setLang(string $lang)
 	{
@@ -40,9 +42,12 @@ class Translation
 
 					if (is_array($p)) {
 						$val = join(", ", $p);
+					} else if ($p instanceof \DateTime) {
+						$val = $p->format("Y-m-d");
 					} else {
 						$val = (string) $p;
 					}
+
 					$message = str_replace(":" . $k, $val, $message);
 				}
 			}

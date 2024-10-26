@@ -11,8 +11,12 @@ use Nagyl\Rules\DateRule;
 use Nagyl\Rules\EqualRule;
 use Nagyl\Rules\ExistsRule;
 use Nagyl\Rules\FloatRule;
+use Nagyl\Rules\GreaterThanOrEqualRule;
+use Nagyl\Rules\GreaterThanRule;
 use Nagyl\Rules\InRule;
 use Nagyl\Rules\IntRule;
+use Nagyl\Rules\LessThanOrEqualRule;
+use Nagyl\Rules\LessThanRule;
 use Nagyl\Rules\MaxLengthRule;
 use Nagyl\Rules\MinLengthRule;
 use Nagyl\ValidationRule;
@@ -24,7 +28,7 @@ use Nagyl\Translation;
 
 /**
  * 
- * TODO: unique, gt, gte, lt, lte, must, arrays...
+ * TODO: unique, must, arrays...
  * 
  */
 
@@ -62,6 +66,7 @@ class Validator
 	public function validate(bool $stopOnFirstError = false): bool
 	{
 		$this->result->isValid = true;
+		$this->result->validated = true;
 		$this->result->errors = [];
 
 		if (count($this->rules) > 0) {
@@ -262,6 +267,42 @@ class Validator
 	public function eq($value): Validator
 	{
 		$v = new EqualRule($value);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function gt($value): Validator
+	{
+		$v = new GreaterThanRule($value);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function gte($value): Validator
+	{
+		$v = new GreaterThanOrEqualRule($value);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function lt($value): Validator
+	{
+		$v = new LessThanRule($value);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function lte($value): Validator
+	{
+		$v = new LessThanOrEqualRule($value);
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;
