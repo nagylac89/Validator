@@ -10,7 +10,21 @@ class RequiredRule extends ValidationRule
 {
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
-		if (
+		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+			if (count($value) > 0) {
+				$this->message = $this->translation->get("required", [...$this->params, "attribute" => $name]);
+				return false;
+			}
+
+			foreach ($value as $v) {
+				if ($v === null || (is_string($v) && trim($v) === "")) {
+					$this->message = $this->translation->get("required", [...$this->params, "attribute" => $name]);
+
+					return false;
+				}
+			}
+
+		} else if (
 			$value === null ||
 			(is_string($value) && trim($value) === "") ||
 			(is_array($value) && count($value) === 0)

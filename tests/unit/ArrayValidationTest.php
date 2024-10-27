@@ -112,3 +112,96 @@ test("array_validator_should_be_valid_on_date_values", function () {
 
 	expect($v->validate())->toBeTrue();
 });
+
+test("array_validator_should_be_valid_on_eq_values", function () {
+	$values = ["val" => [true, true, true]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->eq(true)->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("array_validator_should_be_valid_on_contains_values", function () {
+	$values = ["val" => ["test 1", "test 2", "test 2"]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->string()->contains("test")->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("array_validator_should_be_valid_on_gt_values", function () {
+	$values = ["val" => [5, 5, 6, 10]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->int()->gt(4)->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("array_validator_should_be_valid_on_gte_values", function () {
+	$values = ["val" => [5, 5, 6, 10]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->int()->gte(5)->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("array_validator_should_be_valid_on_lt_values", function () {
+	$values = ["val" => [5, 5, 6, 10]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->int()->lt(11)->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("array_validator_should_be_valid_on_lte_values", function () {
+	$values = ["val" => [5, 5, 6, 10]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->int()->lte(10)->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("array_validator_should_be_valid_on_maxlength_values", function () {
+	$values = ["val" => ["abc", "def", "ghi"]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->string()->maxLength(3)->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("array_validator_should_be_valid_on_minlength_values", function () {
+	$values = ["val" => ["abc", "def", "ghi"]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->string()->minLength(1)->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+
+test("array_validator_should_be_valid_on_in_values", function () {
+	$values = ["val" => [1, 2, 3, 3, 3]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->in([1, 2, 3])->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+
+test("array_validator_should_be_valid_on_required_values", function () {
+	$values = ["val" => [1, 2, null, 3, 3]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->required()->add();
+
+	expect($v->validate())->toBeFalse();
+});
+

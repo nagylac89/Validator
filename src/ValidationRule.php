@@ -25,6 +25,17 @@ class ValidationRule
 		return $this->message;
 	}
 
+	protected function validateInArray(string $name, array $value, $allValues, array $rules): bool
+	{
+		foreach ($value as $v) {
+			if ($this->validate($name, $v, $allValues, $rules) === false) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	protected function nullable(array $rules): bool
 	{
 		$classNames = array_map(function ($r) {

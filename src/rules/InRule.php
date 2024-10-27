@@ -15,7 +15,9 @@ class InRule extends ValidationRule
 
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
-		if (
+		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+			return $this->validateInArray($name, $value, $allValues, $rules);
+		} else if (
 			isset($this->params["values"]) &&
 			is_array($this->params["values"]) &&
 			count($this->params["values"]) > 0 &&

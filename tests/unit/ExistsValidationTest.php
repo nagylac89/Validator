@@ -88,3 +88,21 @@ test('exists_validator_should_be_invalid_msg_check', function () {
 
 	expect($msg)->toBe("Invalid value: val!");
 });
+
+test("array_validator_should_be_valid_on_exists_values", function () {
+	$values = ["val" => [1, 2, 3, 3]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->int()->exists("users", "id")->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("array_validator_should_be_valid_on_exists_values_additional_query", function () {
+	$values = ["val" => [1, 2, 3, 4]];
+
+	$v = new Validator($values);
+	$v->attribute("val")->array()->int()->exists("users", "id", "and is_deleted = 0")->add();
+
+	expect($v->validate())->toBeFalse();
+});

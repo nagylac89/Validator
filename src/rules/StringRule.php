@@ -11,13 +11,7 @@ class StringRule extends ValidationRule
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
-			foreach ($value as $v) {
-				if ($this->validate($name, $v, $allValues, $rules) === false) {
-					return false;
-				}
-			}
-
-			return true;
+			return $this->validateInArray($name, $value, $allValues, $rules);
 		} else if (is_string($value) || ($value === null && $this->nullable($rules))) {
 			return true;
 		} else {

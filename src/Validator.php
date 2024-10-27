@@ -38,20 +38,17 @@ In array validations
 [x] NumericRule
 [x] BooleanRule
 [x] DateRule
-[ ] EqualRule
+[x] EqualRule
+[x] ContainsRule
+[x] GreaterThanOrEqualRule
+[x] GreaterThanRule
+[x] MaxLengthRule
+[x] MinLengthRule
+[x] InRule
+[x] RequiredRule
+[x] ExistsRule
 
-[ ] ContainsRule
-[ ] ExistsRule
-[ ] GreaterThanOrEqualRule
-[ ] GreaterThanRule
-[ ] InRule
-[ ] LessThanOrEqualRule
-[ ] LessThanRule
-[ ] MaxLengthRule
-[ ] MinLengthRule
 [ ] UniqueRule
-[ ] ArrayRule
-[ ] RequiredRule
 
 */
 

@@ -19,7 +19,9 @@ class LessThanOrEqualRule extends ValidationRule
 			return true;
 		}
 
-		if (
+		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+			return $this->validateInArray($name, $value, $allValues, $rules);
+		} else if (
 			$this->existsRule($rules, IntRule::class) &&
 			(int) $value <= $this->params["value"]
 		) {
