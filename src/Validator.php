@@ -29,6 +29,32 @@ use Nagyl\Rules\NumericRule;
 use Nagyl\Rules\RequiredRule;
 use Nagyl\Translation;
 
+/*
+In array validations
+
+[x] IntRule
+[x] StringRule
+[x] FloatRule
+[x] NumericRule
+[x] BooleanRule
+[x] DateRule
+[ ] EqualRule
+
+[ ] ContainsRule
+[ ] ExistsRule
+[ ] GreaterThanOrEqualRule
+[ ] GreaterThanRule
+[ ] InRule
+[ ] LessThanOrEqualRule
+[ ] LessThanRule
+[ ] MaxLengthRule
+[ ] MinLengthRule
+[ ] UniqueRule
+[ ] ArrayRule
+[ ] RequiredRule
+
+*/
+
 class Validator
 {
 	private ValidationResult $result;
@@ -114,6 +140,16 @@ class Validator
 	}
 
 	public function attr(string $attribute): Validator
+	{
+		return $this->attribute($attribute);
+	}
+
+	public function property(string $attribute): Validator
+	{
+		return $this->attribute($attribute);
+	}
+
+	public function prop(string $attribute): Validator
 	{
 		return $this->attribute($attribute);
 	}

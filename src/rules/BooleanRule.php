@@ -10,7 +10,15 @@ class BooleanRule extends ValidationRule
 {
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
-		if (
+		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+			foreach ($value as $v) {
+				if ($this->validate($name, $v, $allValues, $rules) === false) {
+					return false;
+				}
+			}
+
+			return true;
+		} else if (
 			$value === true ||
 			$value === false ||
 			$value === 1 ||

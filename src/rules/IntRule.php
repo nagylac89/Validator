@@ -10,9 +10,17 @@ class IntRule extends ValidationRule
 {
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
-		if (is_int($value)) {
+		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+			foreach ($value as $v) {
+				if ($this->validate($name, $v, $allValues, $rules) === false) {
+					return false;
+				}
+			}
+
 			return true;
-		} else if (is_string($value) && is_numeric($value) && (string)(int)$value === $value) {
+		} else if (is_int($value)) {
+			return true;
+		} else if (is_string($value) && is_numeric($value) && (string) (int) $value === $value) {
 			return true;
 		} else if ($value === null && $this->nullable($rules)) {
 			return true;
