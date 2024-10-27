@@ -75,3 +75,12 @@ test('unique_validator_should_be_invalid_msg_check', function () {
 
 	expect($msg)->toBe("The account value should be unique!");
 });
+
+test('unique_validator_should_be_valid_on_array', function () {
+	$values = ["account" => ["account99@test.hu", "account7@test.hu"]];
+
+	$v = new Validator($values);
+	$v->attr("account")->array()->string()->unique("users", "account")->add();
+
+	expect($v->validate())->toBeTrue();
+});

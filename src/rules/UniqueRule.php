@@ -18,21 +18,44 @@ class UniqueRule extends ValidationRule
 
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
-		$qs = $this->queryString($rules, $value);
+		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+			$notEmptyValues = array_values(array_filter($value, fn($v) => $v !== null && trim($v) !== ""));
+			$uniqueValues = array_values(array_unique($notEmptyValues));
 
-		if ($value !== null && $qs !== null && Validator::getQueryFetcher() !== null) {
-			try {
-				$result = Validator::getQueryFetcher()($qs);
+			if (count($notEmptyValues) === count($uniqueValues)) {
+				$qs = $this->queryString($rules, $value);
 
-				if (
-					is_array($result) &&
-					count($result) > 0 &&
-					isset($result[0]["db"]) &&
-					(int) $result[0]["db"] === 0
-				) {
-					return true;
+				try {
+					$result = Validator::getQueryFetcher()($qs);
+
+					if (
+						is_array($result) &&
+						count($result) > 0 &&
+						isset($result[0]["db"]) &&
+						(int) $result[0]["db"] === 0
+					) {
+						return true;
+					}
+				} catch (\Exception $ex) {
 				}
-			} catch (\Exception $ex) {
+			}
+		} else if ($value !== null && Validator::getQueryFetcher() !== null) {
+			$qs = $this->queryString($rules, $value);
+
+			if ($qs !== null) {
+				try {
+					$result = Validator::getQueryFetcher()($qs);
+
+					if (
+						is_array($result) &&
+						count($result) > 0 &&
+						isset($result[0]["db"]) &&
+						(int) $result[0]["db"] === 0
+					) {
+						return true;
+					}
+				} catch (\Exception $ex) {
+				}
 			}
 		}
 
@@ -43,9 +66,20 @@ class UniqueRule extends ValidationRule
 	private function queryString(array $rules, $value): ?string
 	{
 		$sqlVal = null;
+		$logicalOperator = "=";
 
 		if ($value !== null) {
-			if ($this->existsRule($rules, IntRule::class) || $this->existsRule($rules, NumericRule::class)) {
+			if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+				$uniqueValues = array_values(array_unique($value));
+
+				if ($this->existsRule($rules, IntRule::class) || $this->existsRule($rules, NumericRule::class)) {
+					$sqlVal = "(" . implode(",", $uniqueValues) . ")";
+				} else {
+					$sqlVal = "('" . implode("','", $uniqueValues) . "')";
+				}
+
+				$logicalOperator = "IN";
+			} else if ($this->existsRule($rules, IntRule::class) || $this->existsRule($rules, NumericRule::class)) {
 				$sqlVal = (int) $value;
 			} else {
 				$sqlVal = "'" . $value . "'";
@@ -54,9 +88,10 @@ class UniqueRule extends ValidationRule
 
 		if ($sqlVal) {
 			$qs = sprintf(
-				"SELECT COUNT(*) AS db FROM %s WHERE %s = %s",
+				"SELECT COUNT(*) AS db FROM %s WHERE %s %s %s",
 				$this->params["table"],
 				$this->params["column"],
+				$logicalOperator,
 				$sqlVal
 			);
 

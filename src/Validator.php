@@ -29,29 +29,6 @@ use Nagyl\Rules\NumericRule;
 use Nagyl\Rules\RequiredRule;
 use Nagyl\Translation;
 
-/*
-In array validations
-
-[x] IntRule
-[x] StringRule
-[x] FloatRule
-[x] NumericRule
-[x] BooleanRule
-[x] DateRule
-[x] EqualRule
-[x] ContainsRule
-[x] GreaterThanOrEqualRule
-[x] GreaterThanRule
-[x] MaxLengthRule
-[x] MinLengthRule
-[x] InRule
-[x] RequiredRule
-[x] ExistsRule
-
-[ ] UniqueRule
-
-*/
-
 class Validator
 {
 	private ValidationResult $result;
