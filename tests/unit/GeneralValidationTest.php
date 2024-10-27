@@ -56,3 +56,24 @@ test("eq_rule_should_be_invalid", function () {
 
 	expect($result->errors["name"][0])->toBe("The name value not equal with ok!");
 });
+
+test("must_rule_should_be_valid", function () {
+	$v = new Validator([
+		"name" => "oksa"
+	]);
+
+	$v->attribute("name")->string()->must(fn($d) => $d["name"] === "oksa", "The name value not equal with oksa!")->add();
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("must_rule_error_msg_check", function () {
+	$v = new Validator([
+		"name" => "oksa"
+	]);
+	$v->attribute("name")->string()->must(fn($d) => $d["name"] === "OK", "The name value not equal with oksa!")->add();
+	$v->validate();
+	$errorMsg = $v->result()->errors["name"][0];
+
+	expect($errorMsg)->toBe("The name value not equal with oksa!");
+});

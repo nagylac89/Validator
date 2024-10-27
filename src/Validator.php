@@ -19,6 +19,7 @@ use Nagyl\Rules\LessThanOrEqualRule;
 use Nagyl\Rules\LessThanRule;
 use Nagyl\Rules\MaxLengthRule;
 use Nagyl\Rules\MinLengthRule;
+use Nagyl\Rules\MustRule;
 use Nagyl\Rules\StopOnFailureRule;
 use Nagyl\Rules\UniqueRule;
 use Nagyl\ValidationRule;
@@ -30,7 +31,7 @@ use Nagyl\Translation;
 
 /**
  * 
- * TODO: must, arrays...
+ * TODO: arrays...
  * 
  */
 
@@ -335,6 +336,20 @@ class Validator
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function must(callable $func, string $errorMsg): Validator
+	{
+		$v = new MustRule($func, $errorMsg);
+		$v->translation = $this->translation;
+
+		if ($this->_rule["attribute"] !== null) {
+			$this->_rule["rules"][] = $v;
+		} else {
+			$this->rules["_mustrule"] = [$v];
+		}
+
 		return $this;
 	}
 
