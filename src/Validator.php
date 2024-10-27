@@ -29,12 +29,6 @@ use Nagyl\Rules\NumericRule;
 use Nagyl\Rules\RequiredRule;
 use Nagyl\Translation;
 
-/**
- * 
- * TODO: arrays...
- * 
- */
-
 class Validator
 {
 	private ValidationResult $result;
@@ -75,7 +69,7 @@ class Validator
 		if (count($this->rules) > 0) {
 			foreach ($this->rules as $key => $rules) {
 				$attribute = $key;
-				$value = isset($this->values[$attribute]) ? $this->values[$attribute] : null;
+				$value = $this->getValue($attribute);
 
 				foreach ($rules as $rule) {
 					if ($rule instanceof ValidationRule) {
@@ -83,6 +77,7 @@ class Validator
 							if (!isset($this->result->errors[$attribute])) {
 								$this->result->errors[$attribute] = [];
 							}
+
 							$this->result->errors[$attribute][] = $rule->getMessage();
 
 							if ($stopOnFirstError) {
@@ -362,5 +357,34 @@ class Validator
 		}
 
 		return false;
+	}
+
+	public function getValue(string $selector, $ref = null)
+	{
+		$parts = explode(".", $selector);
+		$ref = $ref ?? $this->values;
+
+		foreach ($parts as $index => $part) {
+			if ($part === "*") {
+				return $this->getWildcardValues($parts, $index, $ref);
+			}
+			$ref = $ref[$part] ?? null;
+			if ($ref === null) {
+				break;
+			}
+		}
+
+		return $ref;
+	}
+
+	private function getWildcardValues(array $parts, int $index, $ref)
+	{
+		$values = [];
+		foreach ($ref as $item) {
+			$selector = join(".", array_slice($parts, $index + 1));
+			$itemValues = $this->getValue($selector, $item);
+			$values = array_merge($values, (array) $itemValues);
+		}
+		return $values;
 	}
 }
