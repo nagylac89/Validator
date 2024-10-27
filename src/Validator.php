@@ -20,6 +20,7 @@ use Nagyl\Rules\LessThanRule;
 use Nagyl\Rules\MaxLengthRule;
 use Nagyl\Rules\MinLengthRule;
 use Nagyl\Rules\StopOnFailureRule;
+use Nagyl\Rules\UniqueRule;
 use Nagyl\ValidationRule;
 use Nagyl\Rules\StringRule;
 use Nagyl\Rules\NullableRule;
@@ -29,7 +30,7 @@ use Nagyl\Translation;
 
 /**
  * 
- * TODO: unique, must, arrays...
+ * TODO: must, arrays...
  * 
  */
 
@@ -259,6 +260,15 @@ class Validator
 	public function exists(string $table, string $column, ?string $additionalFilters = null): Validator
 	{
 		$v = new ExistsRule($table, $column, $additionalFilters);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function unique(string $table, string $column, ?string $additionalFilters = null): Validator
+	{
+		$v = new UniqueRule($table, $column, $additionalFilters);
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;
