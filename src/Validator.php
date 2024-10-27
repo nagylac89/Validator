@@ -19,6 +19,7 @@ use Nagyl\Rules\LessThanOrEqualRule;
 use Nagyl\Rules\LessThanRule;
 use Nagyl\Rules\MaxLengthRule;
 use Nagyl\Rules\MinLengthRule;
+use Nagyl\Rules\StopOnFailureRule;
 use Nagyl\ValidationRule;
 use Nagyl\Rules\StringRule;
 use Nagyl\Rules\NullableRule;
@@ -91,6 +92,10 @@ class Validator
 
 				if (count($this->result->errors) > 0) {
 					$this->result->isValid = false;
+
+					if ($stopOnFirstError || $this->hasRule($rules, StopOnFailureRule::class)) {
+						break;
+					}
 				}
 			}
 		}
@@ -109,6 +114,11 @@ class Validator
 		$this->_rule["rules"] = [];
 
 		return $this;
+	}
+
+	public function attr(string $attribute): Validator
+	{
+		return $this->attribute($attribute);
 	}
 
 	public function add(): void
@@ -307,5 +317,25 @@ class Validator
 
 		$this->_rule["rules"][] = $v;
 		return $this;
+	}
+
+	public function stopOnFailure(): Validator
+	{
+		$v = new StopOnFailureRule();
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	private function hasRule(array $rules, string $rule): bool
+	{
+		foreach ($rules as $r) {
+			if ($r instanceof $rule) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
