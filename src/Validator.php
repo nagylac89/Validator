@@ -29,12 +29,6 @@ use Nagyl\Rules\NumericRule;
 use Nagyl\Rules\RequiredRule;
 use Nagyl\Translation;
 
-
-/**
- * TODO: 
- *  [ ] custom error messages 
- */
-
 class Validator
 {
 	private ValidationResult $result;
@@ -154,6 +148,16 @@ class Validator
 
 		$this->_rule["attribute"] = null;
 		$this->_rule["rules"] = [];
+	}
+
+	public function withMessage(string $message): Validator
+	{
+		if (count($this->_rule["rules"]) > 0) {
+			$lastRule = end($this->_rule["rules"]);
+			$lastRule->setCustomMessage($message);
+		}
+
+		return $this;
 	}
 
 	public function string(): Validator

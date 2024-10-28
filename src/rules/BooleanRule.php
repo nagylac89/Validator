@@ -24,7 +24,7 @@ class BooleanRule extends ValidationRule
 			return true;
 		}
 
-		$this->message = $this->translation->get("invalid", ["attribute" => $name]);
+		$this->message = $this->customMessage !== null ? $this->customMessage : $this->translation->get("invalid", ["attribute" => $name]);
 		return false;
 	}
 }

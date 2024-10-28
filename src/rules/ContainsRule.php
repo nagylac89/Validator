@@ -26,7 +26,7 @@ class ContainsRule extends ValidationRule
 			return true;
 		}
 
-		$this->message = $this->translation->get("contains", [...$this->params, "attribute" => $name]);
+		$this->message = $this->customMessage !== null ? $this->customMessage : $this->translation->get("contains", [...$this->params, "attribute" => $name]);
 		return false;
 	}
 

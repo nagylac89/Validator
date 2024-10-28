@@ -59,7 +59,7 @@ class UniqueRule extends ValidationRule
 			}
 		}
 
-		$this->message = $this->translation->get("unique", ["attribute" => $name]);
+		$this->message = $this->customMessage !== null ? $this->customMessage : $this->translation->get("unique", ["attribute" => $name]);
 		return false;
 	}
 

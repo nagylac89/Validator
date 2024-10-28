@@ -58,7 +58,7 @@ class LessThanOrEqualRule extends ValidationRule
 			return true;
 		}
 
-		$this->message = $this->translation->get("lte", [...$this->params, "attribute" => $name]);
+		$this->message = $this->customMessage !== null ? $this->customMessage : $this->translation->get("lte", [...$this->params, "attribute" => $name]);
 		return false;
 	}
 }

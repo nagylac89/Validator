@@ -12,6 +12,7 @@ use Nagyl\Translation;
 class ValidationRule
 {
 	protected string $message = "";
+	protected ?string $customMessage = null;
 	public Translation $translation;
 	public array $params = [];
 
@@ -23,6 +24,11 @@ class ValidationRule
 	public function getMessage(): string
 	{
 		return $this->message;
+	}
+
+	public function setCustomMessage(string $message): void
+	{
+		$this->customMessage = $message;
 	}
 
 	protected function validateInArray(string $name, array $value, $allValues, array $rules): bool

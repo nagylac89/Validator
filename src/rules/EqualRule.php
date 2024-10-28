@@ -20,7 +20,7 @@ class EqualRule extends ValidationRule
 		} else if ($value === $this->params["value"]) {
 			return true;
 		} else {
-			$this->message = $this->translation->get("eq", [...$this->params, "attribute" => $name]);
+			$this->message = $this->customMessage ? $this->customMessage : $this->translation->get("eq", [...$this->params, "attribute" => $name]);
 		}
 
 		return false;

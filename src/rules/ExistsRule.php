@@ -47,7 +47,7 @@ class ExistsRule extends ValidationRule
 			}
 		}
 
-		$this->message = $this->translation->get("invalid", ["attribute" => $name]);
+		$this->message = $this->customMessage !== null ? $this->customMessage : $this->translation->get("invalid", ["attribute" => $name]);
 		return false;
 	}
 

@@ -137,3 +137,17 @@ test("test_name_attributes", function (string $attribute, string $name) {
 			["address.street", "Street"],
 			["address.type.name", "Address Type Name"],
 		]);
+
+
+test("tes_custom_message", function () {
+	$v = new Validator([
+		"name" => null
+	]);
+
+	$v->attr("name")->required()->withMessage("Custom message!")->string()->add();
+	$v->validate();
+
+	$errors = $v->result()->errors;
+
+	expect($errors["name"][0])->toBe("Custom message!");
+});

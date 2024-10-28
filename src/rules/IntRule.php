@@ -19,7 +19,7 @@ class IntRule extends ValidationRule
 		} else if ($value === null && $this->nullable($rules)) {
 			return true;
 		} else {
-			$this->message = $this->translation->get("int", [...$this->params, "attribute" => $name]);
+			$this->message = $this->customMessage !== null ? $this->customMessage : $this->translation->get("int", [...$this->params, "attribute" => $name]);
 		}
 
 		return false;
