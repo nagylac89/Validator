@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Nagyl;
 
-use Error;
-use Exception;
 use Nagyl\Rules\NullableRule;
 use Nagyl\Translation;
 
