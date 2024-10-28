@@ -10,6 +10,8 @@ use Nagyl\Rules\ContainsRule;
 use Nagyl\Rules\DateRule;
 use Nagyl\Rules\EqualRule;
 use Nagyl\Rules\ExistsRule;
+use Nagyl\Rules\FileRule;
+use Nagyl\Rules\FileSizeRule;
 use Nagyl\Rules\FloatRule;
 use Nagyl\Rules\GreaterThanOrEqualRule;
 use Nagyl\Rules\GreaterThanRule;
@@ -388,6 +390,24 @@ class Validator
 		}
 
 		return false;
+	}
+
+	public function file(): Validator
+	{
+		$v = new FileRule();
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function fileSize(int $maxSizeInKilobytes): Validator
+	{
+		$v = new FileSizeRule($maxSizeInKilobytes);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
 	}
 
 	private function getAttributeDisplayName(string $attribute): string

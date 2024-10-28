@@ -17,5 +17,7 @@ return [
 	"gte" => "The :attribute value should be greater than or equal :value!",
 	"lt" => "The :attribute value should be less than :value!",
 	"lte" => "The :attribute value should be less than or equal :value!",
-	"unique" => "The :attribute value should be unique!"
+	"unique" => "The :attribute value should be unique!",
+	"invalid_file" => "Invalid file: :attribute!",
+	"max_filesize" => "The :attribute size cannot be greater than :size :unit!",
 ];

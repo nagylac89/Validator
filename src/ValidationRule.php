@@ -57,4 +57,15 @@ class ValidationRule
 
 		return in_array($ruleClass, $classNames);
 	}
+
+	protected function getRule(array $rules, string $ruleClass): ?ValidationRule
+	{
+		foreach ($rules as $rule) {
+			if (get_class($rule) === $ruleClass) {
+				return $rule;
+			}
+		}
+
+		return null;
+	}
 }

@@ -17,5 +17,7 @@ return [
 	"gte" => "A(z) :attribute nagyobb vagy egyenlő kell, hogy legyen, mint :value!",
 	"lt" => "A(z) :attribute kisebbnek kell, hogy legyen, mint :value!",
 	"lte" => "A(z) :attribute kisebbnek vagy egyenlőnek kell, hogy legyen, mint :value!",
-	"unique" => "A(z) :attribute már foglalt!"
+	"unique" => "A(z) :attribute már foglalt!",
+	"invalid_file" => "Helytelen fájl: :attribute!",
+	"max_filesize" => "A(z) :attribute mérete maximum :size :unit lehet!",
 ];
