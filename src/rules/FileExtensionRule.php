@@ -31,7 +31,7 @@ class FileExtensionRule extends ValidationRule
 								return false;
 							}
 						}
-					} else if (isset($files["size"])) {
+					} else if (isset($files["name"])) {
 						$ext = $this->getFileExtension($files);
 
 						if ($ext === null || !in_array($ext, $this->params["extensions"])) {

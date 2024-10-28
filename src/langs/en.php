@@ -20,5 +20,6 @@ return [
 	"unique" => "The :attribute value should be unique!",
 	"invalid_file" => "Invalid file: :attribute!",
 	"max_filesize" => "The :attribute size cannot be greater than :size :unit!",
-	"file_extension" => "The :attribute extension is not allowed! (:extensions)"
+	"file_extension" => "The :attribute extension is not allowed! (:extensions)",
+	"mime_type" => "The :attribute file format is not allowed! (:mimeTypes)"
 ];

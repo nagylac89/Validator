@@ -21,6 +21,7 @@ use Nagyl\Rules\IntRule;
 use Nagyl\Rules\LessThanOrEqualRule;
 use Nagyl\Rules\LessThanRule;
 use Nagyl\Rules\MaxLengthRule;
+use Nagyl\Rules\MimeTypeRule;
 use Nagyl\Rules\MinLengthRule;
 use Nagyl\Rules\MustRule;
 use Nagyl\Rules\StopOnFailureRule;
@@ -414,6 +415,15 @@ class Validator
 	public function fileExt(array $extensions): Validator
 	{
 		$v = new FileExtensionRule($extensions);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function mimeType(array $mimeTypes): Validator
+	{
+		$v = new MimeTypeRule($mimeTypes);
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;
