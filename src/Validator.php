@@ -42,6 +42,7 @@ class Validator
 	];
 
 	private $names = [];
+	private static $lang = "en";
 
 	public function __construct($values, array $names = [])
 	{
@@ -50,12 +51,17 @@ class Validator
 		$this->names = $names;
 
 		$this->translation = new Translation();
-		$this->translation->setLang("en");
+		$this->translation->setLang(self::$lang);
 	}
 
 	public static function setQueryFetcher(callable $func): void
 	{
 		self::$queryFetcher = $func;
+	}
+
+	public static function setLang(string $lang): void
+	{
+		self::$lang = $lang;
 	}
 
 	public static function getQueryFetcher(): ?callable

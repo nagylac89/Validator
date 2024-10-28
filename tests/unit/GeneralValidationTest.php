@@ -6,6 +6,13 @@ namespace Tests\Unit;
 
 use Nagyl\Validator;
 
+pest()->beforeEach(function () {
+	Validator::setLang("en");
+})->afterEach(function () {
+	Validator::setLang("en");
+});
+
+
 test("stop_on_first_throws_only_one_error", function () {
 	$v = new Validator([
 		"name" => "teszt"
@@ -139,7 +146,7 @@ test("test_name_attributes", function (string $attribute, string $name) {
 		]);
 
 
-test("tes_custom_message", function () {
+test("test_custom_message", function () {
 	$v = new Validator([
 		"name" => null
 	]);
@@ -150,4 +157,21 @@ test("tes_custom_message", function () {
 	$errors = $v->result()->errors;
 
 	expect($errors["name"][0])->toBe("Custom message!");
+});
+
+test("test_hungarian_required_error_msg", function () {
+	Validator::setLang("hu");
+
+	$v = new Validator([
+		"name" => null
+	], [
+		"name" => "Név"
+	]);
+
+	$v->attr("name")->required()->string()->add();
+	$v->validate();
+
+	$errors = $v->result()->errors;
+
+	expect($errors["name"][0])->toBe("Kötelező mező: Név!");
 });
