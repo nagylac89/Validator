@@ -60,7 +60,7 @@ class FileRule extends ValidationRule
 		return false;
 	}
 
-	public function getValue()
+	public function getValue(): ?array
 	{
 		return $this->value;
 	}

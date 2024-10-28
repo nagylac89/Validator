@@ -10,6 +10,7 @@ use Nagyl\Rules\ContainsRule;
 use Nagyl\Rules\DateRule;
 use Nagyl\Rules\EqualRule;
 use Nagyl\Rules\ExistsRule;
+use Nagyl\Rules\FileExtensionRule;
 use Nagyl\Rules\FileRule;
 use Nagyl\Rules\FileSizeRule;
 use Nagyl\Rules\FloatRule;
@@ -404,6 +405,15 @@ class Validator
 	public function fileSize(int $maxSizeInKilobytes): Validator
 	{
 		$v = new FileSizeRule($maxSizeInKilobytes);
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function fileExt(array $extensions): Validator
+	{
+		$v = new FileExtensionRule($extensions);
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;
