@@ -29,6 +29,12 @@ use Nagyl\Rules\NumericRule;
 use Nagyl\Rules\RequiredRule;
 use Nagyl\Translation;
 
+
+/**
+ * TODO: 
+ *  [ ] custom error messages 
+ */
+
 class Validator
 {
 	private ValidationResult $result;
@@ -41,13 +47,16 @@ class Validator
 		"rules" => []
 	];
 
-	public function __construct($values, string $lang = "en")
+	private $names = [];
+
+	public function __construct($values, array $names = [])
 	{
 		$this->result = new ValidationResult();
 		$this->values = $values;
+		$this->names = $names;
 
 		$this->translation = new Translation();
-		$this->translation->setLang($lang);
+		$this->translation->setLang("en");
 	}
 
 	public static function setQueryFetcher(callable $func): void
@@ -73,7 +82,9 @@ class Validator
 
 				foreach ($rules as $rule) {
 					if ($rule instanceof ValidationRule) {
-						if ($rule->validate($attribute, $value, $this->values, $rules) === false) {
+						$attributeDisplayName = $this->getAttributeDisplayName($attribute);
+
+						if ($rule->validate($attributeDisplayName, $value, $this->values, $rules) === false) {
 							if (!isset($this->result->errors[$attribute])) {
 								$this->result->errors[$attribute] = [];
 							}
@@ -367,6 +378,11 @@ class Validator
 		}
 
 		return false;
+	}
+
+	private function getAttributeDisplayName(string $attribute): string
+	{
+		return $this->names[$attribute] ?? $attribute;
 	}
 
 	public function getValue(string $selector, $ref = null)

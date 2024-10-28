@@ -77,3 +77,63 @@ test("must_rule_error_msg_check", function () {
 
 	expect($errorMsg)->toBe("The name value not equal with oksa!");
 });
+
+test("test_name_attributes", function (string $attribute, string $name) {
+
+	$values = [
+		"name" => null,
+		"email" => null,
+		"roles" => [
+			["id" => 1, "name" => null],
+			["id" => 2, "name" => "user"]
+		],
+		"address" => [
+			"city" => null,
+			"street" => null,
+			"type" => [
+				"name" => null
+			]
+		]
+	];
+
+	$attributeNames = [
+		"name" => "Name",
+		"email" => "E-mail",
+		"roles" => "Roles",
+		"roles.*.id" => "Role ID",
+		"roles.*.name" => " Role Name",
+		"address" => "Address",
+		"address.city" => "City",
+		"address.street" => "Street",
+		"address.type" => "Adress Type",
+		"address.type.name" => "Address Type Name",
+	];
+
+	$v = new Validator($values, $attributeNames);
+
+	$v->attr("name")->string()->required()->add();
+	$v->attr("email")->string()->required()->add();
+	$v->attr("roles")->array()->required()->add();
+	$v->attr("roles.*.id")->array()->int()->required()->add();
+	$v->attr("roles.*.name")->array()->string()->required()->add();
+	$v->attr("address")->array()->required()->add();
+	$v->attr("address.city")->string()->required()->add();
+	$v->attr("address.street")->string()->required()->add();
+	$v->attr("address.type.name")->string()->required()->add();
+
+	$v->validate();
+
+	$errors = $v->result()->errors;
+
+	expect($errors[$attribute][0])->toContain($name);
+})->with([
+			["name", "Name"],
+			["email", "E-mail"],
+			["roles", "Roles"],
+			["roles.*.id", "Role ID"],
+			["roles.*.name", " Role Name"],
+			["address", "Address"],
+			["address.city", "City"],
+			["address.street", "Street"],
+			["address.type.name", "Address Type Name"],
+		]);
