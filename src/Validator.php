@@ -33,6 +33,21 @@ use Nagyl\Rules\NumericRule;
 use Nagyl\Rules\RequiredRule;
 use Nagyl\Translation;
 
+/**
+ * TODO:
+ * implements ITypedRule
+ * [x] array<string>
+ * [x] array<date>
+ * [x] array<int>
+ * [x] array<float>
+ * [x] array<numeric>
+ * [x] array<boolean>
+ * [x] array<file>
+ * [ ] array *
+ * 
+ * [ ] DateRule not exists format should be 0 Y-m-d => 2024-10-10 00:00:00.000
+ */
+
 class Validator
 {
 	private ValidationResult $result;
@@ -430,12 +445,62 @@ class Validator
 		return $this;
 	}
 
+	public function getValues($values = null, string $selector = ""): array
+	{
+		$model = [];
+
+		if ($values === null) {
+			$values = $this->values;
+		}
+
+		$ruleKeys = array_keys($this->rules);
+
+		if (is_array($values)) {
+			foreach ($values as $key => $value) {
+				$s = $selector === "" ? $key : $selector . "." . $key;
+
+				$ruleExists = count(array_filter($ruleKeys, function ($ruleKey) use ($s) {
+					return strncmp($ruleKey, $s, strlen($s)) === 0;
+				})) > 0;
+
+				if ($ruleExists) {
+					$typedRules = $this->getTypedRules($this->rules[$s] ?? []);
+
+					if (count($typedRules) === 1) {
+						$model[$key] = $typedRules[0]->getValue();
+					}
+
+					if (is_array($value) && !array_is_list($value)) {
+						$model[$key] = $this->getValues($value, $s);
+					}
+				}
+			}
+		}
+
+
+		return $model;
+	}
+
+	private function getTypedRules(array $rules): array
+	{
+		$retval = [];
+
+		foreach ($rules as $rule) {
+			if ($rule instanceof ITypedRule) {
+				$retval[] = $rule;
+			}
+		}
+
+		return $retval;
+	}
+
+
 	private function getAttributeDisplayName(string $attribute): string
 	{
 		return $this->names[$attribute] ?? $attribute;
 	}
 
-	public function getValue(string $selector, $ref = null)
+	private function getValue(string $selector, $ref = null)
 	{
 		$parts = explode(".", $selector);
 		$ref = $ref ?? $this->values;
@@ -453,13 +518,24 @@ class Validator
 		return $ref;
 	}
 
+	private function getTypedValue(string $selector)
+	{
+		$value = $this->getValue($selector);
+
+		return $value;
+	}
+
 	private function getWildcardValues(array $parts, int $index, $ref)
 	{
 		$values = [];
 		foreach ($ref as $item) {
 			$selector = join(".", array_slice($parts, $index + 1));
 			$itemValues = $this->getValue($selector, $item);
-			$values = array_merge($values, (array) $itemValues);
+			if (is_array($itemValues)) {
+				$values = array_merge($values, $itemValues);
+			} else {
+				$values[] = $itemValues;
+			}
 		}
 		return $values;
 	}

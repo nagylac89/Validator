@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Nagyl\Rules;
 
 use DateTime;
+use Nagyl\ITypedRule;
 use Nagyl\ValidationRule;
 
-class DateRule extends ValidationRule
+class DateRule extends ValidationRule implements ITypedRule
 {
-	private ?DateTime $val = null;
+	private DateTime|array|null $val = null;
 	private string $parseFormat = "";
 
 	public function __construct(array $formats = [])
@@ -28,7 +29,31 @@ class DateRule extends ValidationRule
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
-			return $this->validateInArray($name, $value, $allValues, $rules);
+			$isValid = $this->validateInArray($name, $value, $allValues, $rules);
+
+			if ($isValid && count($value) > 0) {
+				$this->val = [];
+
+				foreach ($value as $v) {
+					if ($v === null) {
+						$this->val[] = null;
+					}
+
+					if (is_string($v)) {
+						foreach ($this->params["formats"] as $f) {
+							$dt = DateTime::createFromFormat($f, $v);
+
+							if ($dt !== false) {
+								$this->val[] = clone $dt;
+							}
+						}
+					} else if ($v instanceof DateTime) {
+						$this->val[] = $v;
+					}
+				}
+			}
+
+			return $isValid;
 		} else if (is_string($value)) {
 			if (count($this->params["formats"]) > 0) {
 				foreach ($this->params["formats"] as $f) {
@@ -60,5 +85,10 @@ class DateRule extends ValidationRule
 	public function format(): string
 	{
 		return $this->parseFormat;
+	}
+
+	public function getValue(): mixed
+	{
+		return $this->val;
 	}
 }

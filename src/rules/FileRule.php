@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Nagyl\Rules;
 
+use Nagyl\ITypedRule;
 use Nagyl\ValidationRule;
 
-class FileRule extends ValidationRule
+class FileRule extends ValidationRule implements ITypedRule
 {
 	private $value = null;
 
@@ -43,7 +44,6 @@ class FileRule extends ValidationRule
 						}
 					}
 
-
 					$this->value = $files;
 					return true;
 				}
@@ -60,7 +60,7 @@ class FileRule extends ValidationRule
 		return false;
 	}
 
-	public function getValue(): ?array
+	public function getValue(): mixed
 	{
 		return $this->value;
 	}

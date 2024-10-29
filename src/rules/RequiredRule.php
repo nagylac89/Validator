@@ -11,7 +11,7 @@ class RequiredRule extends ValidationRule
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
-			if (count($value) > 0) {
+			if (count($value) === 0) {
 				$this->message = $this->customMessage !== null ? $this->customMessage : $this->translation->get("required", [...$this->params, "attribute" => $name]);
 				return false;
 			}

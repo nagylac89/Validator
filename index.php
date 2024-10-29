@@ -15,7 +15,7 @@ if (isset($_POST["p"])) {
 
 	$v->attribute("name")->string()->minLength(5)->maxLength(20)->required()->add();
 	$v->attribute("email")->string()->minLength(10)->maxLength(20)->required()->add();
-	$v->attribute("uploadfile")->array()->file()->fileSize(1024)->fileExt(["png", "jpg"])->add();
+	$v->attribute("uploadfile")->file()->fileSize(1024)->fileExt(["png", "jpg"])->mimeType(["image/jpeg", "image/png"])->add();
 
 	if ($v->validate()) {
 		echo "OK";
@@ -42,7 +42,7 @@ if (isset($_POST["p"])) {
 	<form action="index.php" method="post" enctype="multipart/form-data">
 		<div style="margin-bottom:5px;"><input type="text" name="name" id="name" placeholder="Name" /></div>
 		<div style="margin-bottom:5px;"><input type="text" name="email" id="email" placeholder="Email" /></div>
-		<div style="margin-bottom:5px;"><input type="file" name="uploadfile[]" multiple /></div>
+		<div style="margin-bottom:5px;"><input type="file" name="uploadfile" /></div>
 
 		<button type="submit" name="p" value="1">Submit</button>
 	</form>

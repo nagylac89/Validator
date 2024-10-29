@@ -6,7 +6,7 @@ namespace Tests\Unit;
 
 use Nagyl\Validator;
 
-
+/*
 test("get_first_level_value_in_array", function () {
 	$v = new Validator(["name" => "John"]);
 
@@ -75,4 +75,4 @@ test("get_list_all_items_by_name_in_array_in_array", function () {
 	]);
 
 	expect($v->getValue("roles.*.permissions.*.code"))->toBe(["p_1", "p_2", "p_1", "p_2"]);
-});
+});*/

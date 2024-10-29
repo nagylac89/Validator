@@ -4,17 +4,30 @@ declare(strict_types=1);
 
 namespace Nagyl\Rules;
 
+use Nagyl\ITypedRule;
 use Nagyl\ValidationRule;
 
-class IntRule extends ValidationRule
+class IntRule extends ValidationRule implements ITypedRule
 {
+	private int|array|null $value = null;
+
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
-			return $this->validateInArray($name, $value, $allValues, $rules);
+			$isValid = $this->validateInArray($name, $value, $allValues, $rules);
+
+			if ($isValid && count($value) > 0) {
+				$this->value = array_map(function ($v) {
+					return $v === null ? null : (int) $v;
+				}, $value);
+			}
+
+			return $isValid;
 		} else if (is_int($value)) {
+			$this->value = $value;
 			return true;
 		} else if (is_string($value) && is_numeric($value) && (string) (int) $value === $value) {
+			$this->value = (int) $value;
 			return true;
 		} else if ($value === null && $this->nullable($rules)) {
 			return true;
@@ -23,5 +36,10 @@ class IntRule extends ValidationRule
 		}
 
 		return false;
+	}
+
+	public function getValue(): mixed
+	{
+		return $this->value;
 	}
 }
