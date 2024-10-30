@@ -246,12 +246,21 @@ test('test_get_validated_model', function () {
 	$v->attr("array_date")->array()->date("Y-m-d")->required()->add();
 
 	$v->validate();
+	$model = [];
 
 	if ($v->result()->isValid) {
 		$model = $v->validatedValues();
-
-		var_dump(json_encode($model));
 	}
 
-	expect($v->result()->isValid)->toBeTrue();
+	expect($model["name"])->toBe("Name");
+	expect($model["roles"])->toBeArray();
+	expect($model["roles"][0]["id"])->toBe(1);
+	expect($model["roles"][0]["creator"]["id"])->toBe(1);
+	expect($model["roles"][0]["permissions"])->toBeArray();
+	expect($model["address"]["type"]["tags"])->toBeArray();
+	expect(count($model["address"]["type"]["tags"]))->toBe(2);
+	expect(array_keys($model))->not()->toContain("custom_prop_1");
+	expect($model["points"])->toBeArray()->each()->toBeNumeric();
+	expect($model["array_date"])->toBeArray()->each()->toBeInstanceOf(\DateTime::class);
+	expect($model["created_at"])->toBeInstanceOf(\DateTime::class);
 });
