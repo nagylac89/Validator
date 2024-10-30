@@ -72,7 +72,7 @@ test("less_then_validation_should_be_valid_on_datetimes_strings", function () {
 
 test("less_then_validation_should_be_valid_on_datetimes_msg", function () {
 	$v = new Validator([
-		"date" => "2024-01-01"
+		"date" => "2024-01-02"
 	]);
 
 	$v->attribute("date")->date()->lt("2024-01-01")->add();
