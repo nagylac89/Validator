@@ -8,6 +8,7 @@ use Nagyl\Rules\ArrayRule;
 use Nagyl\Rules\BooleanRule;
 use Nagyl\Rules\ContainsRule;
 use Nagyl\Rules\DateRule;
+use Nagyl\Rules\EmailRule;
 use Nagyl\Rules\EqualRule;
 use Nagyl\Rules\ExistsRule;
 use Nagyl\Rules\FileExtensionRule;
@@ -173,6 +174,15 @@ class Validator
 	public function string(): Validator
 	{
 		$v = new StringRule();
+		$v->translation = $this->translation;
+
+		$this->_rule["rules"][] = $v;
+		return $this;
+	}
+
+	public function email(): Validator
+	{
+		$v = new EmailRule();
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;

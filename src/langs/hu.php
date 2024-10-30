@@ -21,5 +21,6 @@ return [
 	"invalid_file" => "Helytelen fájl: :attribute!",
 	"max_filesize" => "A(z) :attribute mérete maximum :size :unit lehet!",
 	"file_extension" => "A(z) :attribute kiterjesztése nem engedélyezett! (:extensions)",
-	"mime_type" => "A(z) :attribute kizárólag az alábbi fájlformátumok egyike lehet: (:mimeTypes)!"
+	"mime_type" => "A(z) :attribute kizárólag az alábbi fájlformátumok egyike lehet: (:mimeTypes)!",
+	"email" => "Helytelen e-mail cím: :attribute!",
 ];

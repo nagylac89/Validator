@@ -264,3 +264,38 @@ test('test_get_validated_model', function () {
 	expect($model["array_date"])->toBeArray()->each()->toBeInstanceOf(\DateTime::class);
 	expect($model["created_at"])->toBeInstanceOf(\DateTime::class);
 });
+
+
+test("test_invalid_email", function () {
+	$v = new Validator([
+		"email" => "not_email"
+	]);
+
+	$v->attr("email")->string()->email()->add();
+
+	expect($v->validate())->toBeFalse();
+});
+
+test("test_valid_email", function () {
+	$v = new Validator([
+		"email" => "test@oksa.com"
+	]);
+
+	$v->attr("email")->string()->email()->add();
+
+
+	expect($v->validate())->toBeTrue();
+});
+
+test("test_invalid_email_error", function () {
+	$v = new Validator([
+		"email" => "test.com"
+	]);
+
+	$v->attr("email")->string()->email()->add();
+	$v->validate();
+	$msg = $v->result()->errors["email"][0];
+
+
+	expect($msg)->toBe("Invalid email address: email!");
+});

@@ -21,5 +21,6 @@ return [
 	"invalid_file" => "Invalid file: :attribute!",
 	"max_filesize" => "The :attribute size cannot be greater than :size :unit!",
 	"file_extension" => "The :attribute extension is not allowed! (:extensions)",
-	"mime_type" => "The :attribute file format is not allowed! (:mimeTypes)"
+	"mime_type" => "The :attribute file format is not allowed! (:mimeTypes)",
+	"email" => "Invalid email address: :attribute!",
 ];
