@@ -68,4 +68,15 @@ class ValidationRule
 
 		return null;
 	}
+
+	protected function allItemsAreArrays(array $array): bool
+	{
+		foreach ($array as $item) {
+			if (!is_array($item)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

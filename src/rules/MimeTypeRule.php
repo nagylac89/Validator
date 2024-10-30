@@ -51,8 +51,6 @@ class MimeTypeRule extends ValidationRule
 	private function getFileMimeType($file): ?string
 	{
 		$mimeType = mime_content_type($file["tmp_name"]);
-
-		var_dump($mimeType);
 		return $mimeType !== false ? strtolower($mimeType) : null;
 	}
 

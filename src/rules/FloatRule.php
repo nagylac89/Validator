@@ -14,12 +14,34 @@ class FloatRule extends ValidationRule implements ITypedRule
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
-			$isValid = $this->validateInArray($name, $value, $allValues, $rules);
+			$isValid = false;
+			$allItemsAreArrays = $this->allItemsAreArrays($value);
 
-			if ($isValid && count($value) > 0) {
-				$this->value = array_map(function ($v) {
-					return $v === null ? null : (float) $v;
-				}, $value);
+			if ($allItemsAreArrays) {
+				foreach ($value as $v) {
+					$isValid = $this->validateInArray($name, $v, $allValues, $rules);
+					if (!$isValid) {
+						break;
+					}
+				}
+			} else {
+				$isValid = $this->validateInArray($name, $value, $allValues, $rules);
+			}
+
+			if ($isValid) {
+				$this->value = [];
+
+				if ($allItemsAreArrays) {
+					foreach ($value as $val) {
+						$this->value[] = array_map(function ($v) {
+							return $v === null ? null : (float) $v;
+						}, $val);
+					}
+				} else if (count($value) > 0) {
+					$this->value = array_map(function ($v) {
+						return $v === null ? null : (float) $v;
+					}, $value);
+				}
 			}
 
 			return $isValid;

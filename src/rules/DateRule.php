@@ -29,52 +29,68 @@ class DateRule extends ValidationRule implements ITypedRule
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
-			$isValid = $this->validateInArray($name, $value, $allValues, $rules);
+			$isValid = false;
+			$allItemsAreArrays = $this->allItemsAreArrays($value);
 
-			if ($isValid && count($value) > 0) {
+			if ($allItemsAreArrays) {
+				foreach ($value as $v) {
+					$isValid = $this->validateInArray($name, $v, $allValues, $rules);
+					if (!$isValid) {
+						break;
+					}
+				}
+			} else {
+				$isValid = $this->validateInArray($name, $value, $allValues, $rules);
+			}
+
+			if ($isValid) {
 				$this->val = [];
 
-				foreach ($value as $v) {
-					if ($v === null) {
-						$this->val[] = null;
-					}
-
-					if (is_string($v)) {
-						foreach ($this->params["formats"] as $f) {
-							$dt = DateTime::createFromFormat($f, $v);
-
-							if ($dt !== false) {
-								$this->val[] = clone $dt;
-							}
+				if ($allItemsAreArrays) {
+					foreach ($value as $val) {
+						foreach ($val as $v) {
+							$this->val[] = $this->getDate($v);
 						}
-					} else if ($v instanceof DateTime) {
-						$this->val[] = $v;
+					}
+				} else if (count($value) > 0) {
+					foreach ($value as $v) {
+						$this->val[] = $this->getDate($v);
 					}
 				}
 			}
 
 			return $isValid;
-		} else if (is_string($value)) {
-			if (count($this->params["formats"]) > 0) {
-				foreach ($this->params["formats"] as $f) {
-					$v = DateTime::createFromFormat($f, $value);
-
-					if ($v !== false) {
-						$this->parseFormat = $f;
-						$this->val = clone $v;
-						return true;
-					}
-				}
-			}
 		} else if ($value === null && $this->nullable($rules)) {
 			return true;
-		} else if ($value instanceof DateTime) {
-			$this->val = clone $value;
-			return true;
+		} else {
+			$date = $this->getDate($value);
+
+			if ($date !== null) {
+				$this->val = clone $date;
+				return true;
+			}
 		}
 
 		$this->message = $this->customMessage !== null ? $this->customMessage : $this->translation->get("date", ["attribute" => $name]);
 		return false;
+	}
+
+	private function getDate($val): ?DateTime
+	{
+		if (is_string($val)) {
+			foreach ($this->params["formats"] as $f) {
+				$dt = DateTime::createFromFormat($f, $val);
+
+				if ($dt !== false) {
+					$this->parseFormat = $f;
+					return clone $dt;
+				}
+			}
+		} else if ($val instanceof DateTime) {
+			return $val;
+		}
+
+		return null;
 	}
 
 	public function value(): ?DateTime

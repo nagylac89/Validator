@@ -121,9 +121,9 @@ test("test_name_attributes", function (string $attribute, string $name) {
 	$v->attr("name")->string()->required()->add();
 	$v->attr("email")->string()->required()->add();
 	$v->attr("roles")->array()->required()->add();
-	$v->attr("roles.*.id")->array()->int()->required()->add();
-	$v->attr("roles.*.name")->array()->string()->required()->add();
-	$v->attr("address")->array()->required()->add();
+	$v->attr("roles.*.id")->int()->required()->add();
+	$v->attr("roles.*.name")->string()->required()->add();
+	$v->attr("address")->required()->add();
 	$v->attr("address.city")->string()->required()->add();
 	$v->attr("address.street")->string()->required()->add();
 	$v->attr("address.type.name")->string()->required()->add();
@@ -180,8 +180,25 @@ test('test_get_validated_model', function () {
 		"name" => "Name",
 		"email" => "Email@oksa.hu",
 		"roles" => [
-			["id" => 1, "name" => "Admin", "permissions" => ["create", "update"]],
-			["id" => 2, "name" => "User", "permissions" => []]
+			[
+				"id" => 1,
+				"name" => "Admin",
+				"permissions" => ["create", "update"],
+				"creator" => [
+					"id" => 1,
+					"name" => "User Name"
+				]
+			],
+			[
+				"id" => 2,
+				"name" => "User",
+				"permissions" => ["asd1"],
+				"optional" => "oksa",
+				"creator" => [
+					"id" => 2,
+					"name" => "User Name 2"
+				]
+			]
 		],
 		"address" => [
 			"city" => "Budapest",
@@ -208,8 +225,11 @@ test('test_get_validated_model', function () {
 
 	$v->attr("name")->string()->required()->add();
 	$v->attr("email")->string()->required()->add();
-	$v->attr("roles.*.id")->stopOnFailure()->required()->array()->int()->add();
-	$v->attr("roles.*.name")->stopOnFailure()->required()->array()->string()->add();
+	$v->attr("roles.*.id")->stopOnFailure()->required()->int()->add();
+	$v->attr("roles.*.name")->stopOnFailure()->required()->string()->add();
+	$v->attr("roles.*.optional")->string()->nullable()->add();
+	$v->attr("roles.*.creator.id")->int()->add();
+	$v->attr("roles.*.creator.name")->string()->add();
 	$v->attr("roles.*.permissions")->array()->string()->add();
 	$v->attr("address.city")->string()->required()->add();
 	$v->attr("address.street")->string()->required()->add();
@@ -228,8 +248,9 @@ test('test_get_validated_model', function () {
 	$v->validate();
 
 	if ($v->result()->isValid) {
-		$model = $v->getValues();
-		var_dump($model);
+		$model = $v->validatedValues();
+
+		var_dump(json_encode($model));
 	}
 
 	expect($v->result()->isValid)->toBeTrue();

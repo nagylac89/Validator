@@ -35,16 +35,6 @@ use Nagyl\Translation;
 
 /**
  * TODO:
- * implements ITypedRule
- * [x] array<string>
- * [x] array<date>
- * [x] array<int>
- * [x] array<float>
- * [x] array<numeric>
- * [x] array<boolean>
- * [x] array<file>
- * [ ] array *
- * 
  * [ ] DateRule not exists format should be 0 Y-m-d => 2024-10-10 00:00:00.000
  */
 
@@ -52,9 +42,9 @@ class Validator
 {
 	private ValidationResult $result;
 	private array $rules = [];
-	private $values;
+	private $inputValues;
 	private Translation $translation;
-	private static $queryFetcher = null;
+	private static $queryFetcherCallback = null;
 	private array $_rule = [
 		"attribute" => null,
 		"rules" => []
@@ -63,10 +53,10 @@ class Validator
 	private $names = [];
 	private static $lang = "en";
 
-	public function __construct($values, array $names = [])
+	public function __construct($inputValues, array $names = [])
 	{
 		$this->result = new ValidationResult();
-		$this->values = $values;
+		$this->inputValues = $inputValues;
 		$this->names = $names;
 
 		$this->translation = new Translation();
@@ -75,7 +65,7 @@ class Validator
 
 	public static function setQueryFetcher(callable $func): void
 	{
-		self::$queryFetcher = $func;
+		self::$queryFetcherCallback = $func;
 	}
 
 	public static function setLang(string $lang): void
@@ -85,7 +75,7 @@ class Validator
 
 	public static function getQueryFetcher(): ?callable
 	{
-		return self::$queryFetcher;
+		return self::$queryFetcherCallback;
 	}
 
 	public function validate(bool $stopOnFirstError = false): bool
@@ -97,13 +87,13 @@ class Validator
 		if (count($this->rules) > 0) {
 			foreach ($this->rules as $key => $rules) {
 				$attribute = $key;
-				$value = $this->getValue($attribute);
+				$value = $this->getValue($attribute, $this->inputValues);
 
 				foreach ($rules as $rule) {
 					if ($rule instanceof ValidationRule) {
 						$attributeDisplayName = $this->getAttributeDisplayName($attribute);
 
-						if ($rule->validate($attributeDisplayName, $value, $this->values, $rules) === false) {
+						if ($rule->validate($attributeDisplayName, $value, $this->inputValues, $rules) === false) {
 							if (!isset($this->result->errors[$attribute])) {
 								$this->result->errors[$attribute] = [];
 							}
@@ -323,7 +313,7 @@ class Validator
 
 	public function when(callable $condition, callable $otherRuleFunction): Validator
 	{
-		if ($condition($this->values) === true) {
+		if ($condition($this->inputValues) === true) {
 			$otherRuleFunction($this);
 		}
 
@@ -445,53 +435,84 @@ class Validator
 		return $this;
 	}
 
-	public function getValues($values = null, string $selector = ""): array
+	public function validatedValues($values = null, string $selector = ""): array
 	{
 		$model = [];
+		$oneLevelModel = [];
+		$hasItem = false;
 
-		if ($values === null) {
-			$values = $this->values;
+		foreach ($this->rules as $rk => $attributeRules) {
+			$typedRule = $this->getTypedRule($attributeRules);
+
+			if ($typedRule !== null) {
+				$oneLevelModel[$rk] = $typedRule->getValue();
+				$hasItem = true;
+			}
 		}
 
-		$ruleKeys = array_keys($this->rules);
+		if ($hasItem) {
+			foreach ($oneLevelModel as $selector => $value) {
+				$parts = explode(".", $selector);
+				$ref = &$model;
 
-		if (is_array($values)) {
-			foreach ($values as $key => $value) {
-				$s = $selector === "" ? $key : $selector . "." . $key;
-
-				$ruleExists = count(array_filter($ruleKeys, function ($ruleKey) use ($s) {
-					return strncmp($ruleKey, $s, strlen($s)) === 0;
-				})) > 0;
-
-				if ($ruleExists) {
-					$typedRules = $this->getTypedRules($this->rules[$s] ?? []);
-
-					if (count($typedRules) === 1) {
-						$model[$key] = $typedRules[0]->getValue();
-					}
-
-					if (is_array($value) && !array_is_list($value)) {
-						$model[$key] = $this->getValues($value, $s);
-					}
+				if (count($parts) === 1) {
+					$model[$selector] = $value;
+				} else {
+					$this->typeValueParser($ref, $value, $parts);
 				}
 			}
 		}
 
-
 		return $model;
 	}
 
-	private function getTypedRules(array $rules): array
+	private function typeValueParser(&$ref, $value, array $parts)
 	{
-		$retval = [];
+		foreach ($parts as $index => $part) {
+			if ($part === "*") {
+				for ($i = 0; $i < count($value); $i++) {
+					if (!isset($ref[$i])) {
+						$ref[$i] = [];
+					}
 
+					$this->typeValueParser($ref[$i], $value[$i], array_slice($parts, $index + 1));
+				}
+
+				break;
+			}
+
+			if ($index === count($parts) - 1) {
+				$ref[$part] = $value;
+			} else {
+				if (!isset($ref[$part])) {
+					$ref[$part] = [];
+				}
+
+				$ref = &$ref[$part];
+			}
+		}
+	}
+
+	private function existsRuleDefinitionByStartsWith(string $s, ?array $ruleKeys): bool
+	{
+		if ($ruleKeys === null) {
+			$ruleKeys = array_keys($this->rules);
+		}
+
+		return count(array_filter($ruleKeys, function ($ruleKey) use ($s) {
+			return strncmp($ruleKey, $s, strlen($s)) === 0;
+		})) > 0;
+	}
+
+	private function getTypedRule(array $rules): ?ITypedRule
+	{
 		foreach ($rules as $rule) {
 			if ($rule instanceof ITypedRule) {
-				$retval[] = $rule;
+				return $rule;
 			}
 		}
 
-		return $retval;
+		return null;
 	}
 
 
@@ -503,13 +524,15 @@ class Validator
 	private function getValue(string $selector, $ref = null)
 	{
 		$parts = explode(".", $selector);
-		$ref = $ref ?? $this->values;
+		$ref = $ref ?? $this->inputValues;
 
 		foreach ($parts as $index => $part) {
 			if ($part === "*") {
 				return $this->getWildcardValues($parts, $index, $ref);
 			}
+
 			$ref = $ref[$part] ?? null;
+
 			if ($ref === null) {
 				break;
 			}
@@ -518,21 +541,15 @@ class Validator
 		return $ref;
 	}
 
-	private function getTypedValue(string $selector)
-	{
-		$value = $this->getValue($selector);
-
-		return $value;
-	}
-
 	private function getWildcardValues(array $parts, int $index, $ref)
 	{
 		$values = [];
 		foreach ($ref as $item) {
 			$selector = join(".", array_slice($parts, $index + 1));
 			$itemValues = $this->getValue($selector, $item);
+
 			if (is_array($itemValues)) {
-				$values = array_merge($values, $itemValues);
+				$values[] = $itemValues;
 			} else {
 				$values[] = $itemValues;
 			}

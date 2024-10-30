@@ -14,18 +14,44 @@ class BooleanRule extends ValidationRule implements ITypedRule
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
 		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
-			$isValid = $this->validateInArray($name, $value, $allValues, $rules);
+			$isValid = false;
+			$allItemsAreArrays = $this->allItemsAreArrays($value);
 
-			if ($isValid && count($value)) {
+			if ($allItemsAreArrays) {
+				foreach ($value as $v) {
+					$isValid = $this->validateInArray($name, $v, $allValues, $rules);
+					if (!$isValid) {
+						break;
+					}
+				}
+			} else {
+				$isValid = $this->validateInArray($name, $value, $allValues, $rules);
+			}
+
+			if ($isValid) {
 				$this->value = [];
 
-				foreach ($value as $v) {
-					if ($v === null) {
-						$this->value[] = null;
-					}
+				if ($allItemsAreArrays) {
+					foreach ($value as $val) {
+						foreach ($val as $v) {
+							if ($v === null) {
+								$this->value[] = null;
+							}
 
-					if ($v === true || $v === false || $v === 1 || $v === 0 || $v === "1" || $v === "0") {
-						$this->value[] = $v === true || $v === 1 || $v === "1";
+							if ($v === true || $v === false || $v === 1 || $v === 0 || $v === "1" || $v === "0") {
+								$this->value[] = $v === true || $v === 1 || $v === "1";
+							}
+						}
+					}
+				} else if (count($value) > 0) {
+					foreach ($value as $v) {
+						if ($v === null) {
+							$this->value[] = null;
+						}
+
+						if ($v === true || $v === false || $v === 1 || $v === 0 || $v === "1" || $v === "0") {
+							$this->value[] = $v === true || $v === 1 || $v === "1";
+						}
 					}
 				}
 			}
