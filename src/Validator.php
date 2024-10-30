@@ -33,11 +33,6 @@ use Nagyl\Rules\NumericRule;
 use Nagyl\Rules\RequiredRule;
 use Nagyl\Translation;
 
-/**
- * TODO:
- * [ ] DateRule not exists format should be 0 Y-m-d => 2024-10-10 00:00:00.000
- */
-
 class Validator
 {
 	private ValidationResult $result;
@@ -435,11 +430,12 @@ class Validator
 		return $this;
 	}
 
-	public function validatedValues($values = null, string $selector = ""): array
+	public function validatedValues(): array
 	{
 		$model = [];
 		$oneLevelModel = [];
 		$hasItem = false;
+		$selector = "";
 
 		foreach ($this->rules as $rk => $attributeRules) {
 			$typedRule = $this->getTypedRule($attributeRules);

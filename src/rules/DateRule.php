@@ -83,6 +83,15 @@ class DateRule extends ValidationRule implements ITypedRule
 
 				if ($dt !== false) {
 					$this->parseFormat = $f;
+
+					if (
+						strpos($f, "H") === false &&
+						strpos($f, "i") === false &&
+						strpos($f, "s") === false
+					) {
+						$dt->setTime(0, 0, 0, 0);
+					}
+
 					return clone $dt;
 				}
 			}
