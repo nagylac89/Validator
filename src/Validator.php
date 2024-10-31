@@ -171,9 +171,9 @@ class Validator
 		return $this;
 	}
 
-	public function string(): Validator
+	public function string(bool $safe = true): Validator
 	{
-		$v = new StringRule();
+		$v = new StringRule($safe);
 		$v->translation = $this->translation;
 
 		$this->_rule["rules"][] = $v;

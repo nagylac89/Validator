@@ -10,6 +10,12 @@ use Nagyl\ValidationRule;
 class StringRule extends ValidationRule implements ITypedRule
 {
 	private string|array|null $value;
+	private bool $safe = true;
+
+	public function __construct(bool $safe = true)
+	{
+		$this->safe = $safe;
+	}
 
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
@@ -59,6 +65,28 @@ class StringRule extends ValidationRule implements ITypedRule
 
 	public function getValue(): mixed
 	{
+		if ($this->safe) {
+			if (is_array($this->value) && count($this->value) > 0) {
+				$items = [];
+
+				foreach ($this->value as $v) {
+					if (is_array($v)) {
+						$items[] = array_map(function ($val) {
+							return $val !== null ? htmlspecialchars($val, ENT_QUOTES, "UTF-8") : null;
+						}, $v);
+					} else if (is_string($v)) {
+						$items[] = htmlspecialchars($v, ENT_QUOTES, "UTF-8");
+					} else {
+						$items[] = $v;
+					}
+				}
+
+				return $items;
+			} else if (is_string($this->value)) {
+				return htmlspecialchars($this->value, ENT_QUOTES, "UTF-8");
+			}
+		}
+
 		return $this->value;
 	}
 }

@@ -69,3 +69,27 @@ test("string_array_object_validator_should_be_valid", function () {
 
 	expect($v->validate())->toBeTrue();
 });
+
+test("string_validated_model_xss_protected", function () {
+	$values = ["name" => "<script>alert('xss')</script>"];
+
+	$v = new Validator($values);
+	$v->attribute("name")->string()->add();
+	$v->validate();
+
+	$model = $v->validatedValues();
+
+	expect($model["name"])->toBe("&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;");
+});
+
+test("string_validated_model_xss_protection_off", function () {
+	$values = ["name" => "<script>alert('xss')</script>"];
+
+	$v = new Validator($values);
+	$v->attribute("name")->string(safe: false)->add();
+	$v->validate();
+
+	$model = $v->validatedValues();
+
+	expect($model["name"])->toBe("<script>alert('xss')</script>");
+});
