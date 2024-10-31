@@ -24,7 +24,7 @@ class ExistsRule extends ValidationRule
 			try {
 				$result = Validator::getQueryFetcher()($qs);
 
-				if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+				if (($this->existsRule($rules, ArrayRule::class) && is_array($value)) || is_array($value)) {
 					$uniqueValuesCount = count(array_values(array_unique($value)));
 
 					if (
@@ -57,7 +57,7 @@ class ExistsRule extends ValidationRule
 		$logicalOperator = "=";
 
 		if ($value !== null) {
-			if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+			if (($this->existsRule($rules, ArrayRule::class) && is_array($value)) || is_array($value)) {
 				$uniqueValues = array_values(array_unique($value));
 
 				if ($this->existsRule($rules, IntRule::class) || $this->existsRule($rules, NumericRule::class)) {

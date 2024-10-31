@@ -15,7 +15,7 @@ class EqualRule extends ValidationRule
 
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
-		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+		if (($this->existsRule($rules, ArrayRule::class) && is_array($value)) || is_array($value)) {
 			return $this->validateInArray($name, $value, $allValues, $rules);
 		} else if ($value === $this->params["value"]) {
 			return true;

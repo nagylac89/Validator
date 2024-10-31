@@ -112,3 +112,18 @@ test("less_then_or_equal_validation_should_be_valid_on_numeric", function () {
 
 	expect($v->validate())->toBeTrue();
 });
+
+test("less_than_validation_should_test_in_array_object", function () {
+	$values = [
+		"roles" => [
+			["id" => 1, "name" => "admin"],
+			["id" => 2, "name" => "user"],
+			["id" => 3, "name" => "guest"]
+		]
+	];
+
+	$v = new Validator($values);
+	$v->attribute("roles.*.id")->int()->lt(4)->add();
+
+	expect($v->validate())->toBeTrue();
+});

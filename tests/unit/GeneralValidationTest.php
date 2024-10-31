@@ -51,6 +51,18 @@ test("eq_rule_should_be_valid", function () {
 	expect($v->validate())->toBeTrue();
 });
 
+test("eq_rule_test_in_array_object", function () {
+	$v = new Validator([
+		"roles" => [
+			["id" => 1, "name" => "Admin"],
+			["id" => 2, "name" => "Admin"]
+		]
+	]);
+
+	$v->attribute("roles.*.name")->string()->eq("Admin")->add();
+	expect($v->validate())->toBeTrue();
+});
+
 test("eq_rule_should_be_invalid", function () {
 	$v = new Validator([
 		"name" => "oksa"
@@ -298,4 +310,16 @@ test("test_invalid_email_error", function () {
 
 
 	expect($msg)->toBe("Invalid email address: email!");
+});
+
+test("email_rule_test_in_array_object", function () {
+	$v = new Validator([
+		"users" => [
+			["email" => "test@okok.com"],
+			["email" => "test@okok.com"],
+		]
+	]);
+
+	$v->attr("users.*.email")->string()->email()->add();
+	expect($v->validate())->toBeTrue();
 });

@@ -7,7 +7,7 @@ namespace Tests\Unit;
 use Nagyl\Validator;
 
 test("required_validator_should_be_invalid_on_empty_string", function () {
-	$values = ["val"	=> ""];
+	$values = ["val" => ""];
 
 	$v = new Validator($values);
 	$v->attribute("val")->string()->required()->add();
@@ -16,7 +16,7 @@ test("required_validator_should_be_invalid_on_empty_string", function () {
 });
 
 test("required_validator_should_be_valid_on_string", function () {
-	$values = ["val"	=> "test"];
+	$values = ["val" => "test"];
 
 	$v = new Validator($values);
 	$v->attribute("val")->string()->required()->add();
@@ -25,7 +25,7 @@ test("required_validator_should_be_valid_on_string", function () {
 });
 
 test("required_validator_should_be_invalid_on_null", function () {
-	$values = ["val"	=> null];
+	$values = ["val" => null];
 
 	$v = new Validator($values);
 	$v->attribute("val")->required()->add();
@@ -34,7 +34,7 @@ test("required_validator_should_be_invalid_on_null", function () {
 });
 
 test("required_validator_should_be_invalid_on_empty_array", function () {
-	$values = ["val"	=> []];
+	$values = ["val" => []];
 
 	$v = new Validator($values);
 	$v->attribute("val")->required()->add();
@@ -43,7 +43,7 @@ test("required_validator_should_be_invalid_on_empty_array", function () {
 });
 
 test("required_validator_should_be_valid_on_array", function () {
-	$values = ["val"	=> [1, 2, 3]];
+	$values = ["val" => [1, 2, 3]];
 
 	$v = new Validator($values);
 	$v->attribute("val")->required()->add();
@@ -52,7 +52,7 @@ test("required_validator_should_be_valid_on_array", function () {
 });
 
 test("required_validator_should_be_return_error", function () {
-	$values = ["val"	=> null];
+	$values = ["val" => null];
 
 	$v = new Validator($values);
 	$v->attribute("val")->required()->add();
@@ -63,4 +63,33 @@ test("required_validator_should_be_return_error", function () {
 	$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
 
 	expect($errorMsg)->toBe("Required field: val!");
+});
+
+
+test("required_validator_should_be_return_error_on_empty_string", function () {
+	$values = ["val" => ""];
+
+	$v = new Validator($values);
+	$v->attribute("val")->string()->required()->add();
+
+	$v->validate();
+	$result = $v->result();
+
+	$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
+
+	expect($errorMsg)->toBe("Required field: val!");
+});
+
+test("required_validator_should_be_invalid_on_array_object", function () {
+	$values = [
+		"roles" => [
+			["name" => "admin"],
+			["name" => ""]
+		]
+	];
+
+	$v = new Validator($values);
+	$v->attribute("roles.*.name")->required()->add();
+
+	expect($v->validate())->toBeFalse();
 });

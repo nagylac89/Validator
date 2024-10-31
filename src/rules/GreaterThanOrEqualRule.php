@@ -19,7 +19,7 @@ class GreaterThanOrEqualRule extends ValidationRule
 			return true;
 		}
 
-		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+		if (($this->existsRule($rules, ArrayRule::class) && is_array($value)) || is_array($value)) {
 			return $this->validateInArray($name, $value, $allValues, $rules);
 		} else if (
 			$this->existsRule($rules, IntRule::class) &&

@@ -20,7 +20,7 @@ class ContainsRule extends ValidationRule
 			return true;
 		}
 
-		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+		if (($this->existsRule($rules, ArrayRule::class) && is_array($value)) || is_array($value)) {
 			return $this->validateInArray($name, $value, $allValues, $rules);
 		} else if (is_string($value) && mb_strrpos(strtolower($value), strtolower($this->params["value"])) !== false) {
 			return true;

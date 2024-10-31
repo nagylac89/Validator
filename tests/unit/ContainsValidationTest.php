@@ -32,3 +32,18 @@ test('contains_validator_should_be_invalid', function () {
 
 	expect($v->validate())->toBeFalse();
 });
+
+test("contains_test_on_array_object", function () {
+	$values = [
+		"roles" => [
+			["name" => "admin role"],
+			["name" => "user role"],
+			["name" => "test role"]
+		]
+	];
+
+	$v = new Validator($values);
+	$v->attribute("roles.*.name")->contains("role")->add();
+
+	expect($v->validate())->toBeTrue();
+});

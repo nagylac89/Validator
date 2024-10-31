@@ -106,3 +106,18 @@ test("array_validator_should_be_valid_on_exists_values_additional_query", functi
 
 	expect($v->validate())->toBeFalse();
 });
+
+test("exists_validator_test_on_array_object", function () {
+	$v = new Validator([
+		"users" => [
+			["id" => 1],
+			["id" => 2],
+			["id" => 3],
+			["id" => 4],
+			["id" => 5]
+		]
+	]);
+
+	$v->attribute("users.*.id")->int()->exists("users", "id")->add();
+	expect($v->validate())->toBeTrue();
+});

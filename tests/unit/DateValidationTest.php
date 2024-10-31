@@ -78,3 +78,16 @@ test("date_parser_times_shoud_be_zero_when_not_used", function () {
 
 	expect($date)->toBe("2024-10-11 00:00:00");
 });
+
+test("date_test_in_array_object", function () {
+	$v = new Validator([
+		"users" => [
+			["name" => "Test User", "createDate" => "2024-10-11"],
+			["name" => "Test User", "createDate" => "2024-10-12"],
+			["name" => "Test User", "createDate" => "2024-10-13"],
+		]
+	]);
+
+	$v->attribute("users.*.createDate")->date()->add();
+	expect($v->validate())->toBeTrue();
+});

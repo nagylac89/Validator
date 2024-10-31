@@ -13,7 +13,7 @@ class NumericRule extends ValidationRule implements ITypedRule
 
 	public function validate(string $name, $value, $allValues, array $rules): bool
 	{
-		if ($this->existsRule($rules, ArrayRule::class) && is_array($value)) {
+		if (($this->existsRule($rules, ArrayRule::class) && is_array($value)) || is_array($value)) {
 			$isValid = false;
 			$allItemsAreArrays = $this->allItemsAreArrays($value);
 

@@ -8,7 +8,7 @@ use Nagyl\Validator;
 
 
 test("int_validator_should_be_valid_on_int", function () {
-	$values = ["val"	=> 10];
+	$values = ["val" => 10];
 
 	$v = new Validator($values);
 	$v->attribute("val")->int()->add();
@@ -17,7 +17,7 @@ test("int_validator_should_be_valid_on_int", function () {
 });
 
 test("int_validator_should_be_valid_on_int_string", function () {
-	$values = ["val"	=> "1"];
+	$values = ["val" => "1"];
 
 	$v = new Validator($values);
 	$v->attribute("val")->int()->add();
@@ -26,7 +26,7 @@ test("int_validator_should_be_valid_on_int_string", function () {
 });
 
 test("int_validator_should_be_invalid_on_null", function () {
-	$values = ["val"	=> null];
+	$values = ["val" => null];
 
 	$v = new Validator($values);
 	$v->attribute("val")->int()->add();
@@ -35,7 +35,7 @@ test("int_validator_should_be_invalid_on_null", function () {
 });
 
 test("int_validator_should_be_valid_when_nullable", function () {
-	$values = ["val"	=> null];
+	$values = ["val" => null];
 
 	$v = new Validator($values);
 	$v->attribute("val")->int()->nullable()->add();
@@ -44,7 +44,7 @@ test("int_validator_should_be_valid_when_nullable", function () {
 });
 
 test("int_validator_should_be_return_error", function () {
-	$values = ["val"	=> ""];
+	$values = ["val" => ""];
 
 	$v = new Validator($values);
 	$v->attribute("val")->int()->add();
@@ -55,4 +55,18 @@ test("int_validator_should_be_return_error", function () {
 	$errorMsg = isset($result->errors["val"]) ? $result->errors["val"][0] : "";
 
 	expect($errorMsg)->toBe("The val must be integer!");
+});
+
+test("int_validator_test_in_array_object", function () {
+	$values = [
+		"roles" => [
+			["id" => 1, "name" => "admin"],
+			["id" => 2, "name" => "user"],
+		]
+	];
+
+	$v = new Validator($values);
+	$v->attribute("roles.*.id")->int()->add();
+
+	expect($v->validate())->toBeTrue();
 });
