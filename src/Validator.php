@@ -49,6 +49,12 @@ class Validator
 	private $names = [];
 	private static $lang = "en";
 
+	/**
+	 * Constructor for the Validator class.
+	 *
+	 * @param mixed $inputValues The input values to be validated.
+	 * @param array $names An optional array of names corresponding to the input values.
+	 */
 	public function __construct($inputValues, array $names = [])
 	{
 		$this->result = new ValidationResult();
@@ -59,11 +65,24 @@ class Validator
 		$this->translation->setLang(self::$lang);
 	}
 
+	/**
+	 * Sets the query fetcher callback.
+	 * 
+	 * The query fetcher callback is used to fetch the query result for the exists and unique rules.
+	 * @param callable $func The callback function to be set. function (string $queryString): array
+	 */
 	public static function setQueryFetcher(callable $func): void
 	{
 		self::$queryFetcherCallback = $func;
 	}
 
+	/**
+	 * Sets the language for the Validator.
+	 *
+	 * @param string $lang The language code to set. default language is "en".
+	 *
+	 * @return void
+	 */
 	public static function setLang(string $lang): void
 	{
 		self::$lang = $lang;
@@ -74,6 +93,12 @@ class Validator
 		return self::$queryFetcherCallback;
 	}
 
+	/**
+	 * Validates the data according to the defined rules.
+	 *
+	 * @param bool $stopOnFirstError Optional. If set to true, the validation will stop on the first encountered error. Default is false.
+	 * @return bool Returns true if the data is valid, false otherwise.
+	 */
 	public function validate(bool $stopOnFirstError = false): bool
 	{
 		$this->result->isValid = true;
@@ -116,11 +141,22 @@ class Validator
 		return $this->result->isValid;
 	}
 
+	/**
+	 * Returns the result of the validation process.
+	 *
+	 * @return ValidationResult The result of the validation.
+	 */
 	public function result(): ValidationResult
 	{
 		return $this->result;
 	}
 
+	/**
+	 * Sets the attribute to be validated.
+	 *
+	 * @param string $attribute The name of the attribute.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function attribute(string $attribute): Validator
 	{
 		$this->_rule["attribute"] = $attribute;
@@ -129,21 +165,48 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Sets the attribute to be validated.
+	 *
+	 * @param string $attribute The name of the attribute.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function attr(string $attribute): Validator
 	{
 		return $this->attribute($attribute);
 	}
 
+	/**
+	 * Sets the attribute to be validated.
+	 *
+	 * @param string $attribute The name of the attribute.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function property(string $attribute): Validator
 	{
 		return $this->attribute($attribute);
 	}
 
+	/**
+	 * Sets the attribute to be validated.
+	 *
+	 * @param string $attribute The name of the attribute.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function prop(string $attribute): Validator
 	{
 		return $this->attribute($attribute);
 	}
 
+
+	/**
+	 * Adds a new item to the validator.
+	 *
+	 * This method is responsible for adding queued validation rules. 
+	 * This close the fluent assertions.
+	 *
+	 * @return void
+	 */
 	public function add(): void
 	{
 		if (!empty($this->_rule["attribute"]) && count($this->_rule["rules"]) > 0) {
@@ -161,6 +224,12 @@ class Validator
 		$this->_rule["rules"] = [];
 	}
 
+	/**
+	 * Sets a custom validation message for the previous rule.
+	 *
+	 * @param string $message The custom message to be used for validation.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function withMessage(string $message): Validator
 	{
 		if (count($this->_rule["rules"]) > 0) {
@@ -171,6 +240,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Add an string validation rule to the current attribute.
+	 *
+	 * @param bool $safe Optional. If true, use xss protection for this attribute when call the validatedValues method.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function string(bool $safe = true): Validator
 	{
 		$v = new StringRule($safe);
@@ -180,6 +255,11 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Add an email validation rule to the current attribute.
+	 *
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function email(): Validator
 	{
 		$v = new EmailRule();
@@ -189,6 +269,11 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Marks the field as required.
+	 *
+	 * @return Validator Returns the current instance of the Validator for method chaining.
+	 */
 	public function required(): Validator
 	{
 		$v = new RequiredRule();
@@ -198,6 +283,11 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Marks the field as nullable, allowing it to be null.
+	 *
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function nullable(): Validator
 	{
 		$v = new NullableRule();
@@ -207,6 +297,11 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Add array validation rule to the current attribute.
+	 *
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function array(): Validator
 	{
 		$v = new ArrayRule();
@@ -216,6 +311,11 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Add float validation rule to the current attribute.
+	 *
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function float(): Validator
 	{
 		$v = new FloatRule();
@@ -225,6 +325,11 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Add integer validation rule to the current attribute.
+	 *
+	 * @return Validator Returns the current Validator instance for method chaining.
+	 */
 	public function int(): Validator
 	{
 		$v = new IntRule();
@@ -234,6 +339,11 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Add numeric validation rule to the current attribute.
+	 *
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function numeric(): Validator
 	{
 		$v = new NumericRule();
@@ -243,6 +353,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Validates if the value is within the given array of values.
+	 *
+	 * @param array $values The array of values to check against.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function in(array $values): Validator
 	{
 		$v = new InRule($values);
@@ -252,6 +368,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Sets the minimum length requirement for validation.
+	 *
+	 * @param int $length The minimum length to be set.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function minLength(int $length): Validator
 	{
 		$v = new MinLengthRule($length);
@@ -261,6 +383,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Sets the maximum length for validation.
+	 *
+	 * @param int $length The maximum length allowed.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function maxLength(int $length): Validator
 	{
 		$v = new MaxLengthRule($length);
@@ -270,6 +398,11 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Add boolean validation for current attribute.
+	 *
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function boolean(): Validator
 	{
 		$v = new BooleanRule();
@@ -279,6 +412,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Validates that the input is a date matching the specified format(s).
+	 *
+	 * @param string|array $format The date format(s) to validate against. Can be a single format as a string or multiple formats as an array. defaults: ["Y-m-d", "Y-m-d H:i", "Y-m-d H:i:s"]
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function date(string|array $format = []): Validator
 	{
 		$formats = is_array($format) ? $format : [$format];
@@ -289,6 +428,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Checks if the current attribute value is contained within the validator.
+	 *
+	 * @param string $value The value to check for containment.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function contains(string $value): Validator
 	{
 		$v = new ContainsRule($value);
@@ -298,6 +443,15 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Checks if a record exists in the specified table and column with optional additional filters.
+	 * For this rule to work, need to configure the query fetcher callback with this method setQueryFetcher.
+	 *
+	 * @param string $table The name of the table to check.
+	 * @param string $column The name of the column to check.
+	 * @param string|null $additionalFilters Optional additional SQL filters to apply.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function exists(string $table, string $column, ?string $additionalFilters = null): Validator
 	{
 		$v = new ExistsRule($table, $column, $additionalFilters);
@@ -307,6 +461,15 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Ensures that the value is unique in the specified database table and column.
+	 * For this rule to work, need to configure the query fetcher callback with this method setQueryFetcher.
+	 *
+	 * @param string $table The name of the database table to check.
+	 * @param string $column The name of the column in the table to check.
+	 * @param string|null $additionalFilters Optional additional SQL filters to apply to the uniqueness check.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function unique(string $table, string $column, ?string $additionalFilters = null): Validator
 	{
 		$v = new UniqueRule($table, $column, $additionalFilters);
@@ -316,6 +479,15 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Applies a validation rule conditionally.
+	 *
+	 * This method allows you to apply a validation rule only when a specified condition is met.
+	 *
+	 * @param callable $condition A callable that returns a boolean indicating whether the $otherRuleFunction should be applied.
+	 * @param callable $otherRuleFunction A callable that contains the validation rule to be applied if the $condition returns true.
+	 * @return Validator Returns the current Validator instance for method chaining.
+	 */
 	public function when(callable $condition, callable $otherRuleFunction): Validator
 	{
 		if ($condition($this->inputValues) === true) {
@@ -325,6 +497,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Validates if the given value is equal to a predefined value.
+	 *
+	 * @param mixed $value The value to be compared.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function eq($value): Validator
 	{
 		$v = new EqualRule($value);
@@ -334,6 +512,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Validates that the given value is greater than a specified threshold.
+	 *
+	 * @param mixed $value The value to be validated.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function gt($value): Validator
 	{
 		$v = new GreaterThanRule($value);
@@ -343,6 +527,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Validates that the given value is greater than or equal to a specified threshold.
+	 *
+	 * @param mixed $value The value to be validated.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function gte($value): Validator
 	{
 		$v = new GreaterThanOrEqualRule($value);
@@ -352,6 +542,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Validates that the given value is less than a specified threshold.
+	 *
+	 * @param mixed $value The value to be validated.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function lt($value): Validator
 	{
 		$v = new LessThanRule($value);
@@ -361,6 +557,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Validates that the given value is less than or equal to a specified value.
+	 *
+	 * @param mixed $value The value to be validated.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function lte($value): Validator
 	{
 		$v = new LessThanOrEqualRule($value);
@@ -370,6 +572,11 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Stops the validation process on the first failure, on attribute level.
+	 *
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function stopOnFailure(): Validator
 	{
 		$v = new StopOnFailureRule();
@@ -379,6 +586,13 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Adds a custom validation rule to the validator.
+	 *
+	 * @param callable $func The validation function that must return a boolean. The function gets all values as a parameter. function($inputValues): bool
+	 * @param string $errorMsg The error message to display if the validation fails.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function must(callable $func, string $errorMsg): Validator
 	{
 		$v = new MustRule($func, $errorMsg);
@@ -393,17 +607,11 @@ class Validator
 		return $this;
 	}
 
-	private function hasRule(array $rules, string $rule): bool
-	{
-		foreach ($rules as $r) {
-			if ($r instanceof $rule) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
+	/**
+	 * A file validation rule. This rule is used to validate file uploads.
+	 *
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function file(): Validator
 	{
 		$v = new FileRule();
@@ -413,6 +621,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Validates that the file size does not exceed the specified maximum size.
+	 *
+	 * @param int $maxSizeInKilobytes The maximum file size allowed in kilobytes.
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function fileSize(int $maxSizeInKilobytes): Validator
 	{
 		$v = new FileSizeRule($maxSizeInKilobytes);
@@ -422,6 +636,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Validates the file extension against a list of allowed extensions.
+	 *
+	 * @param array $extensions An array of allowed file extensions. e.g. ["jpg", "png", "gif"]
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function fileExt(array $extensions): Validator
 	{
 		$v = new FileExtensionRule($extensions);
@@ -431,6 +651,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Validates the MIME type of a file.
+	 *
+	 * @param array $mimeTypes An array of allowed MIME types. e.g. ["image/jpeg", "image/png"]
+	 * @return Validator Returns the current Validator instance.
+	 */
 	public function mimeType(array $mimeTypes): Validator
 	{
 		$v = new MimeTypeRule($mimeTypes);
@@ -440,6 +666,17 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * Get the validated values.
+	 *
+	 * This method returns an array of values that have been validated.
+	 * The array is structured is same as the input values and validation keys.
+	 * If the inputValues contains not validated values, they will not be included in the returned array.
+	 * The array values will be of specified types according to the validation rules.
+	 * 		e.g.: if the input value is "1" and the validation rule is int(), the validated value will be 1.
+	 *
+	 * @return array The array of validated values.
+	 */
 	public function validatedValues(): array
 	{
 		$model = [];
@@ -497,6 +734,17 @@ class Validator
 				$ref = &$ref[$part];
 			}
 		}
+	}
+
+	private function hasRule(array $rules, string $rule): bool
+	{
+		foreach ($rules as $r) {
+			if ($r instanceof $rule) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private function existsRuleDefinitionByStartsWith(string $s, ?array $ruleKeys): bool
