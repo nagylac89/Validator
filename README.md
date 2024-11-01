@@ -300,7 +300,10 @@ $v = new Validator([
   "name" => "oksa"
 ]);
 
-$v->attribute("name")->string()->must(fn($d) => $d["name"] === "oksa", "The name value not equal with oksa!")->add();
+$v->attribute("name")->string()->must(
+  fn($d) => $d["name"] === "oksa",
+  "The name value not equal with oksa!"
+)->add();
 ```
 
 ### Other rules
