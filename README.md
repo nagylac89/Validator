@@ -110,14 +110,14 @@ This function has one parameter the string $queryString, which is the generated 
 $db = new \SQLite3('test.sqlite');
 
 Validator::setQueryFetcher(function (string $qs) use ($db) {
-    $retval = [];
+  $retval = [];
 
-	$r = $db->query($qs);
-	while ($result = $r->fetchArray()) {
-		$retval[] = $result;
-	}
+  $r = $db->query($qs);
+  while ($result = $r->fetchArray()) {
+    $retval[] = $result;
+  }
 
-	return $retval;
+  return $retval;
 });
 ```
 
@@ -165,9 +165,9 @@ It returns the result of validation.
 ```php
 class ValidationResult
 {
-	public bool $validated = false;
-	public bool $isValid = true;
-	public array $errors = []; // contains all errors by validation rule key
+  public bool $validated = false;
+  public bool $isValid = true;
+  public array $errors = []; // contains all errors by validation rule key
 }
 ```
 
@@ -266,13 +266,13 @@ This method allows you to apply a validation rule only when a specified conditio
 
 ```php
 $v = new Validator([
-	"id" => 1,
-	"name" => "oksa"
+  "id" => 1,
+  "name" => "oksa"
 ]);
 
 $v->attribute("name")->string()->when(
-	fn($d) => $d["id"] !== null,
-	fn($validator) => $validator->maxLength(2)
+  fn($d) => $d["id"] !== null,
+  fn($validator) => $validator->maxLength(2)
 )->add();
 
 ```
@@ -297,7 +297,7 @@ Adds a custom validation rule to the validator.
 
 ```php
 $v = new Validator([
-	"name" => "oksa"
+  "name" => "oksa"
 ]);
 
 $v->attribute("name")->string()->must(fn($d) => $d["name"] === "oksa", "The name value not equal with oksa!")->add();
