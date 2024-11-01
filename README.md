@@ -5,7 +5,7 @@ Standalone validator library.
 $values = [
   "id"          => 1,
   "email"       => "email@test.com",
-  "name"        => "Test Name"
+  "name"        => "Test Name",
   "avatar"      => null,
   "accepted"    => true,
   "permissions" => ["permission1", "permission2", "permission3"],
